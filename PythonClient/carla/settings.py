@@ -40,7 +40,7 @@ class CarlaSettings(object):
         self.QualityLevel = 'Epic'
         # [CARLA/LevelSettings]
         self.PlayerVehicle = None
-        self.NumberOfVehicles = 20
+        self.NumberOfVehicles = 15
         self.NumberOfPedestrians = 30
         self.WeatherId = 1
         self.SeedVehicles = None

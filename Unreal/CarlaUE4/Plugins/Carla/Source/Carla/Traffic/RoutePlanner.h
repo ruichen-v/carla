@@ -45,6 +45,14 @@ protected:
       bool bFromSweep,
       const FHitResult &SweepResult);
 
+  UFUNCTION()
+  bool IsSplineValid(const USplineComponent *SplineComponent);
+
+  UFUNCTION()
+  AWheeledVehicleAIController *GetVehicleController(AActor *Actor);
+
+  const USplineComponent *PickARoute(URandomEngine &RandomEngine) const;
+
 public:
 
   UPROPERTY(EditAnywhere)

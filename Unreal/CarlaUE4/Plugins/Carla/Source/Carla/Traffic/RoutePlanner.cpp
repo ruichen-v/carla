@@ -13,13 +13,13 @@
 
 #include "Engine/CollisionProfile.h"
 
-static bool IsSplineValid(const USplineComponent *SplineComponent)
+bool ARoutePlanner::IsSplineValid(const USplineComponent *SplineComponent)
 {
   return (SplineComponent != nullptr) &&
          (SplineComponent->GetNumberOfSplinePoints() > 1);
 }
 
-static AWheeledVehicleAIController *GetVehicleController(AActor *Actor)
+AWheeledVehicleAIController *ARoutePlanner::GetVehicleController(AActor *Actor)
 {
   auto *Vehicle = (Actor->IsPendingKill() ? nullptr : Cast<ACarlaWheeledVehicle>(Actor));
   return (Vehicle != nullptr ?
@@ -27,10 +27,7 @@ static AWheeledVehicleAIController *GetVehicleController(AActor *Actor)
       nullptr);
 }
 
-static const USplineComponent *PickARoute(
-    URandomEngine &RandomEngine,
-    const TArray<USplineComponent *> &Routes,
-    const TArray<float> &Probabilities)
+const USplineComponent *ARoutePlanner::PickARoute(URandomEngine &RandomEngine) const
 {
   check(Routes.Num() > 0);
 
@@ -56,12 +53,14 @@ ARoutePlanner::ARoutePlanner(const FObjectInitializer& ObjectInitializer) :
   TriggerVolume->SetMobility(EComponentMobility::Static);
   TriggerVolume->SetCollisionProfileName(FName("OverlapAll"));
   TriggerVolume->bGenerateOverlapEvents = true;
+  UE_LOG(LogCarla, Warning, TEXT("PlanCons: Root position %f, %f, %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z );
 }
 
 #if WITH_EDITOR
 void ARoutePlanner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
   Super::PostEditChangeProperty(PropertyChangedEvent);
+  UE_LOG(LogCarla, Warning, TEXT("PlanPostChng: Root position %f, %f, %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z );
   const auto Size = Routes.Num();
   if (PropertyChangedEvent.Property && (Size != Probabilities.Num())) {
     Probabilities.Reset(Size);
@@ -125,7 +124,7 @@ void ARoutePlanner::OnTriggerBeginOverlap(
   auto *RandomEngine = (Controller != nullptr ? Controller->GetRandomEngine() : nullptr);
   if (RandomEngine != nullptr)
   {
-    auto *Route = PickARoute(*RandomEngine, Routes, Probabilities);
+    auto *Route = PickARoute(*RandomEngine);
 
     TArray<FVector> WayPoints;
     const auto Size = Route->GetNumberOfSplinePoints();

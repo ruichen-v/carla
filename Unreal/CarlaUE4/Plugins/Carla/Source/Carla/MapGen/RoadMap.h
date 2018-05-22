@@ -45,6 +45,7 @@ public:
   /// Whether this pixel lies in-road.
   bool IsRoad() const
   {
+    //return true; // MARK
     return (Value & (1 << IsRoadRow)) != 0;
   }
 
@@ -155,6 +156,8 @@ public:
   void DrawDebugPixelsToLevel(UWorld *World, bool bJustFlushDoNotDraw = false) const;
 
 #endif // WITH_EDITOR
+
+  void checkOffRoad();
 
 private:
 

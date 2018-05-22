@@ -80,10 +80,12 @@ void ACityMapGenerator::PreSave(const ITargetPlatform *TargetPlatform)
 
 void ACityMapGenerator::UpdateMap()
 {
+  UE_LOG(LogCarla, Log, TEXT("Updating map..."));
   UpdateSeeds();
   GenerateGraph();
   if (bGenerateRoads) {
-    GenerateRoads();
+    GenerateRoads(); // MARK disable to prevent overriding
+    UE_LOG(LogCarla, Warning, TEXT("GenerateRoad enabled."));
   }
   if (bTriggerRoadMapGeneration) {
     bTriggerRoadMapGeneration = false;
@@ -306,15 +308,24 @@ void ACityMapGenerator::GenerateRoadMap()
     }
   }
 
+  //RoadMap->checkOffRoad();
+  UE_LOG(LogCarla, Log, TEXT("Generating road map...Done writing road map"));
+
 #if WITH_EDITOR
   RoadMap->Log();
 #endif // WITH_EDITOR
+  //RoadMap->checkOffRoad();
+  UE_LOG(LogCarla, Log, TEXT("Generating road map...Done logging"));
 
   if (bSaveRoadMapToDisk) {
     RoadMap->SaveAsPNG(FPaths::ProjectSavedDir(), World->GetMapName());
   }
+  //RoadMap->checkOffRoad();
+  UE_LOG(LogCarla, Log, TEXT("Generating road map...Done saving"));
 
 #if WITH_EDITOR
   RoadMap->DrawDebugPixelsToLevel(GetWorld(), !bDrawDebugPixelsToLevel);
 #endif // WITH_EDITOR
+  //RoadMap->checkOffRoad();
+  UE_LOG(LogCarla, Log, TEXT("Generating road map...Done drawing"));
 }

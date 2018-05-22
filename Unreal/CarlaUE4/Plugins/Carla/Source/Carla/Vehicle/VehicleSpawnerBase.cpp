@@ -55,7 +55,7 @@ void AVehicleSpawnerBase::BeginPlay()
     SpawnPoints.Add(*It);
   }
 
-  UE_LOG(LogCarla, Log, TEXT("Found %d positions for spawning vehicles"), SpawnPoints.Num());
+  UE_LOG(LogCarla, Log, TEXT("Found %d positions for spawning vehicless"), SpawnPoints.Num());
 
   if (SpawnPoints.Num() < NumberOfVehicles) {
     bSpawnVehicles = false;
@@ -63,6 +63,7 @@ void AVehicleSpawnerBase::BeginPlay()
   }
 
   if (bSpawnVehicles) {
+    UE_LOG(LogCarla, Log, TEXT("In begin play, Try spawning vehicles..."));
     const int32 MaximumNumberOfAttempts = 4 * NumberOfVehicles;
     int32 NumberOfAttempts = 0;
     while ((NumberOfVehicles > Vehicles.Num()) && (NumberOfAttempts < MaximumNumberOfAttempts)) {
@@ -90,8 +91,11 @@ void AVehicleSpawnerBase::SetNumberOfVehicles(const int32 Count)
 void AVehicleSpawnerBase::TryToSpawnRandomVehicle()
 {
   auto SpawnPoint = GetRandomSpawnPoint();
+  UE_LOG(LogCarla, Log, TEXT("In TryToSpawnRandomVehicle, trying..."));
   if (SpawnPoint != nullptr) {
-      SpawnVehicleAtSpawnPoint(*SpawnPoint);
+      // SpawnVehicleAtSpawnPoint(*SpawnPoint); // MARK use this line to randomly spawn
+      SpawnVehicleAtSpawnPoint(*SpawnPoints[1]);
+      UE_LOG(LogCarla, Log, TEXT("Spawned one vehicle"));
   } else {
     UE_LOG(LogCarla, Error, TEXT("Unable to find spawn point"));
   }

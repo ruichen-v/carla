@@ -77,6 +77,7 @@ void ACityMapMeshHolder::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
   Super::PostEditChangeProperty(PropertyChangedEvent);
   if (PropertyChangedEvent.Property) 
   { 
+    UE_LOG(LogCarla, Warning, TEXT("ACityMapMeshHolder:Deleting pieces, Updating Map..."));
     DeletePieces();
     UpdateMapScale();
     UpdateMap();
@@ -95,6 +96,7 @@ FVector ACityMapMeshHolder::GetTileLocation(uint32 X, uint32 Y) const
 
 void ACityMapMeshHolder::SetStaticMesh(ECityMapMeshTag Tag, UStaticMesh *Mesh)
 {
+  UE_LOG(LogCarla, Warning, TEXT("ACityMapMeshHolder:SetStaticMesh...***"));
   StaticMeshes[Tag] = Mesh;
   if (Mesh != nullptr) {
     TagMap.Add(Mesh, Tag);

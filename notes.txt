@@ -1,0 +1,5 @@
+./CarlaUE4.sh /Game/maps/Town01 -carla-server -benchmark -fps=15 -windowed -ResX=800 -ResY=600
+../../../UE4_18_3/Engine/Binaries/Linux/UE4Editor "$PWD/CarlaUE4.uproject"
+
+$ cd Unreal/CarlaUE4
+$ make CarlaUE4Editor

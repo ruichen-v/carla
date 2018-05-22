@@ -36,6 +36,7 @@ void ARoadSegment::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 {
   Super::PostEditChangeProperty(PropertyChangedEvent);
   if (PropertyChangedEvent.Property) {
+    UE_LOG(LogCarla, Warning, TEXT("RoadSegment:PropertyChangedEvent"));
     GenerateRoad();
   }
 }

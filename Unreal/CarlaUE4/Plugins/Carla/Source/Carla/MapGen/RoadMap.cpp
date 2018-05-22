@@ -50,6 +50,7 @@ uint16 FRoadMapPixelData::Encode(bool IsRoad, bool HasDirection, const FVector &
 FColor FRoadMapPixelData::EncodeAsColor() const
 {
   if (!IsRoad()) {
+    // UE_LOG(LogCarla, Log, TEXT("Pixel still not road..."));
     return FColor(0u, 0u, 0u, 255u);
   } else if (!HasDirection()) {
     return FColor(255u, 255u, 255u, 255u);
@@ -100,7 +101,7 @@ void URoadMap::SetPixelAt(
     const FTransform &Transform,
     const bool bInvertDirection)
 {
-  bool bIsRoad = false;
+  bool bIsRoad = true; //MARK change to false to consider sidewalk, disable non-road for now
   bool bHasDirection = false;
   FVector Direction(0.0f, 0.0f, 0.0f);
 
@@ -192,7 +193,8 @@ void URoadMap::SetPixelAt(
       Direction *= -1.0f;
     }
   }
-  const auto Value = FRoadMapPixelData::Encode(bIsRoad, bHasDirection, Direction);
+  if (!bIsRoad) UE_LOG(LogCarla, Log, TEXT("SetPixelAt: Writing non-road pixel..."));
+  const auto Value = FRoadMapPixelData::Encode(true, bHasDirection, Direction);
   RoadMapData[GetIndex(PixelX, PixelY)] = Value;
 }
 
@@ -335,5 +337,17 @@ void URoadMap::DrawDebugPixelsToLevel(UWorld *World, const bool bJustFlushDoNotD
 }
 
 #endif // WITH_EDITOR
+
+void URoadMap::checkOffRoad()
+{
+  for (auto& x: RoadMapData)
+  {
+    if ((x & (1 << 15)) == 0)
+    {
+      UE_LOG(LogCarla, Warning, TEXT("checkOffRoad::Off road pixel."));
+      return;
+    }
+  }
+}
 
 #undef LOCTEXT_NAMESPACE
