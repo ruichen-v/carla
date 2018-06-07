@@ -45,6 +45,7 @@ public:
   /// Whether this pixel lies in-road.
   bool IsRoad() const
   {
+    return true; // MARK override navi info for demo
     return (Value & (1 << IsRoadRow)) != 0;
   }
 

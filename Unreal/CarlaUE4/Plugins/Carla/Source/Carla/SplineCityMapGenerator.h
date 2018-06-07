@@ -43,18 +43,18 @@ public:
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class CARLA_API ASplineCityMapGenerator : public AActor
 {
     GENERATED_BODY()
-    
+
   // ===========================================================================
   // -- Construction and update related methods --------------------------------
   // ===========================================================================
 public:
-    
+
   ASplineCityMapGenerator(const FObjectInitializer& ObjectInitializer);
 
   ~ASplineCityMapGenerator();
