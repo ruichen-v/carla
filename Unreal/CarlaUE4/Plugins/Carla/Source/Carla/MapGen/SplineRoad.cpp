@@ -34,8 +34,8 @@ void ASplineRoad::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedE
 {
   Super::PostEditChangeProperty(PropertyChangedEvent);
   UE_LOG(LogCarla, Log, TEXT("SplineRoad: PostEditChangeProperty."));
-  if (PropertyChangedEvent.Property) 
-  { 
+  if (PropertyChangedEvent.Property)
+  {
     //ClearRoadSegments();
     //GenerateRoadSegments();
   }
@@ -55,15 +55,15 @@ void ASplineRoad::GenerateRoadSegments()
   int32 NumOfKnots = RoadSkeleton->GetNumberOfSplinePoints();
   UE_LOG(LogCarla, Log, TEXT("SplineRoad: NumOfKnots is %d."),NumOfKnots);
   check(NumOfKnots>0);
-  RoadSegments.Reset(NumOfKnots-1);
-  UE_LOG(LogCarla, Log, TEXT("SplineRoad: RoadSegments has size %d."),RoadSegments.Num());
+  // RoadSegments.Reset(NumOfKnots-1);
+  // UE_LOG(LogCarla, Log, TEXT("SplineRoad: RoadSegments has size %d."),RoadSegments.Num());
   for (int32 i=0; i<NumOfKnots-1; ++i)
   {
     // Create spline mesh component
-    RoadSegments.Add(NewObject<USplineMeshComponent>(this));
-    RoadSegments[i]->RegisterComponent();
-    RoadSegments[i]->CreationMethod = EComponentCreationMethod::UserConstructionScript;
-    
+    USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(this);
+    SplineMesh->RegisterComponent();
+    SplineMesh->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+
     // Get start and end of segment
     FVector StartLocation, StartTangent;
     FVector EndLocation,   EndTangent;
@@ -71,33 +71,33 @@ void ASplineRoad::GenerateRoadSegments()
       i,   StartLocation, StartTangent, ESplineCoordinateSpace::Local);
     RoadSkeleton->GetLocationAndTangentAtSplinePoint(
       i+1, EndLocation,   EndTangent,   ESplineCoordinateSpace::Local);
-    RoadSegments[i]->SetMobility(EComponentMobility::Movable);
+    SplineMesh->SetMobility(EComponentMobility::Movable);
     // Set road mesh type
-    RoadSegments[i]->SetStaticMesh(RoadMesh);
+    SplineMesh->SetStaticMesh(RoadMesh);
 
     // Set start and end
-    RoadSegments[i]->SetStartAndEnd(
+    SplineMesh->SetStartAndEnd(
       StartLocation, StartTangent, EndLocation, EndTangent, true);
 
     // Forward axis should always be X
-    
+
     // Attach to root
-    RoadSegments[i]->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-    RoadSegments[i]->SetHiddenInGame(false);
+    SplineMesh->AttachToComponent(RoadSkeleton, FAttachmentTransformRules::KeepRelativeTransform);
+    SplineMesh->SetHiddenInGame(false);
   }
 }
 
-void ASplineRoad::ClearRoadSegments()
-{
-  for (int32 i=0; i<RoadSegments.Num(); ++i)
-  {
-    check(RoadSegments[i] != nullptr);
-    RoadSegments[i]->UnregisterComponent();
-    RoadSegments[i]->DestroyComponent();
-    RoadSegments[i] = nullptr;
-  }
-  UE_LOG(LogCarla, Log, TEXT("SplineRoad: Road segments cleared."));
-}
+// void ASplineRoad::ClearRoadSegments()
+// {
+//   for (int32 i=0; i<RoadSegments.Num(); ++i)
+//   {
+//     check(RoadSegments[i] != nullptr);
+//     RoadSegments[i]->UnregisterComponent();
+//     RoadSegments[i]->DestroyComponent();
+//     RoadSegments[i] = nullptr;
+//   }
+//   UE_LOG(LogCarla, Log, TEXT("SplineRoad: Road segments cleared."));
+// }
 
 void ASplineRoad::SetRoadSkeleton(const TArray<FVector>& knots,
                                   const FVector& HeadTangent,

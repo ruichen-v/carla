@@ -95,8 +95,8 @@ protected:
   UPROPERTY(Category = "Vehicle Spawner", BlueprintReadWrite, EditAnywhere, meta = (ClampMin = "10", ClampMax = "10000", UIMin = "10", UIMax = "10000"))
   float DistanceToPlayerBetweenSpawnAttemptsAfterBegin = 5000;
 private:
-  
+
   /** Time handler to spawn more vehicles in the case we could not do it in the beginplay */
   FTimerHandle AttemptTimerHandle;
- 
+
 };

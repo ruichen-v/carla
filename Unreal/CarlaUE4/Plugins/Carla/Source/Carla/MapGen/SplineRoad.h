@@ -19,7 +19,7 @@ class CARLA_API ASplineRoad : public AActor
   // ===========================================================================
   /// @name Constructor
   // ===========================================================================
-  /// @{ 
+  /// @{
 public:
 
   ASplineRoad(const FObjectInitializer& ObjectInitializer);
@@ -50,28 +50,28 @@ protected:
 #endif // WITH_EDITOR
 
   void GenerateRoadSegments();
-  void ClearRoadSegments();
+  // void ClearRoadSegments();
 
   /// @}
   // ===========================================================================
   /// @name Road Mesh
   // ===========================================================================
   /// @{
-protected: 
+protected:
   /// Road assets
 
   UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", EditAnyWhere, EditFixedSize)
   UStaticMesh *RoadMesh;
 
-  UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", VisibleAnyWhere)
-  TArray<USplineMeshComponent *> RoadSegments;
+  // UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", VisibleAnyWhere)
+  // TArray<USplineMeshComponent *> RoadSegments;
 
   /// @}
   // ===========================================================================
   /// @name Road Skeleton
   // ===========================================================================
   /// @{
-protected: 
+protected:
   /// Road curve
 
   UPROPERTY(Category = "Road structure", EditAnyWhere)

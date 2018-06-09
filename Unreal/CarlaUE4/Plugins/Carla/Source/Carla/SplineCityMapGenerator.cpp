@@ -48,9 +48,9 @@ void ASplineCityMapGenerator::PostInitializeComponents()
 
   if(IsValid(GetLevel())&&!GetLevel()->IsPendingKill())
   {
-    TArray<AActor*> roadsegments;
-    GetAttachedActors(roadsegments);
-    if(roadsegments.Num()==0)
+    TArray<AActor*> SplineRoads;
+    GetAttachedActors(SplineRoads);
+    if(SplineRoads.Num()==0)
     {
      UE_LOG(LogCarla, Error, TEXT("Please regenerate the road in edit mode for '%s' actor"), *UKismetSystemLibrary::GetDisplayName(this));
      UpdateMap();
@@ -155,11 +155,11 @@ void ASplineCityMapGenerator::PreSave(const ITargetPlatform *TargetPlatform)
 
 void ASplineCityMapGenerator::DeleteRoads()
 {
-  TArray<AActor*> roadsegments;
-  GetAttachedActors(roadsegments);
-  for (int32 i=roadsegments.Num()-1; i>=0; --i)
+  TArray<AActor*> SplineRoads;
+  GetAttachedActors(SplineRoads);
+  for (int32 i=SplineRoads.Num()-1; i>=0; --i)
   {
-    roadsegments[i]->Destroy();
+    SplineRoads[i]->Destroy();
   }
   UE_LOG(LogCarla, Log, TEXT("SplineCityMapGenerator: DeleteRoads."));
 }
@@ -190,18 +190,18 @@ void ASplineCityMapGenerator::AddRoadInstance(const FRoadDescriptor& RoadDescrip
   // Spawn road segment actor
   FVector Location(0.0f, 0.0f, 0.0f);
   FRotator Rotation(0.0f, 0.0f, 0.0f);
-  ASplineRoad* SplineRoadSegActor = Cast<ASplineRoad>(
+  ASplineRoad* SplineRoadActor = Cast<ASplineRoad>(
     GetWorld()->SpawnActor(ASplineRoad::StaticClass(), &Location, &Rotation, params));
-  SplineRoadSegActor->AttachToActor(this,FAttachmentTransformRules::KeepRelativeTransform);
+  SplineRoadActor->AttachToActor(this,FAttachmentTransformRules::KeepRelativeTransform);
   // Configure road segment
-  SplineRoadSegActor->SetRoadMesh(GetStaticMesh(Tag));
-  SplineRoadSegActor->SetRoadSkeleton(
+  SplineRoadActor->SetRoadMesh(GetStaticMesh(Tag));
+  SplineRoadActor->SetRoadSkeleton(
                   RoadDescriptor.Knots,
                   RoadDescriptor.StartTangent*RoadDescriptor.TangentLength,
                   RoadDescriptor.EndTangent*RoadDescriptor.TangentLength);
 
-  SplineRoadSegActor->Tags.Add(UCarlaSettings::CARLA_ROAD_TAG);
-  SplineRoadSegActor->bEnableAutoLODGeneration = true;
+  SplineRoadActor->Tags.Add(UCarlaSettings::CARLA_ROAD_TAG);
+  SplineRoadActor->bEnableAutoLODGeneration = true;
 }
 
 void ASplineCityMapGenerator::AddRoadDescriptor(const TArray<FVector>& Knots,

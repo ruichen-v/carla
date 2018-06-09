@@ -58,32 +58,28 @@ void AVehicleSpawnerBase::BeginPlay()
 
   UE_LOG(LogCarla, Log, TEXT("Found %d PlayerStart positions for spawning vehicles"), SpawnPoints.Num());
 
-  if (SpawnPoints.Num() < NumberOfVehicles && SpawnPoints.Num()>0) 
+  if (SpawnPoints.Num() < NumberOfVehicles && SpawnPoints.Num()>0)
   {
     UE_LOG(LogCarla, Warning, TEXT("We don't have enough spawn points (PlayerStart) for vehicles!"));
-	if(SpawnPoints.Num()==0)
-	{
-	  UE_LOG(LogCarla, Error, TEXT("At least one spawn point (PlayerStart) is needed to spawn vehicles!"));	
-	} else
-	{
-	  UE_LOG(LogCarla, Log, 
-	    TEXT("To cover the %d vehicles to spawn after beginplay, it will spawn one new vehicle each %f seconds"),
-	    NumberOfVehicles - SpawnPoints.Num(),
-		TimeBetweenSpawnAttemptsAfterBegin
-	  )
-;
-	}
+  	if(SpawnPoints.Num()==0)
+  	{
+  	  UE_LOG(LogCarla, Error, TEXT("At least one spawn point (PlayerStart) is needed to spawn vehicles!"));
+  	} else {
+  	  UE_LOG(LogCarla, Log,
+  	    TEXT("To cover the %d vehicles to spawn after beginplay, it will spawn one new vehicle each %f seconds"),
+  	    NumberOfVehicles - SpawnPoints.Num(), TimeBetweenSpawnAttemptsAfterBegin);
+  	}
   }
-  
+
   if(NumberOfVehicles==0||SpawnPoints.Num()==0) bSpawnVehicles = false;
 
-  if (bSpawnVehicles) 
+  if (bSpawnVehicles)
   {
 	GetRandomEngine()->Shuffle(SpawnPoints); //to get a random spawn point from the map
-    const int32 MaximumNumberOfAttempts = SpawnPoints.Num(); 
-    int32 NumberOfAttempts = 0; 
+    const int32 MaximumNumberOfAttempts = SpawnPoints.Num();
+    int32 NumberOfAttempts = 0;
     int32 SpawnIndexCount = 0;
-    while ((NumberOfVehicles > Vehicles.Num()) && (NumberOfAttempts < MaximumNumberOfAttempts)) 
+    while ((NumberOfVehicles > Vehicles.Num()) && (NumberOfAttempts < MaximumNumberOfAttempts))
 	{
       if(SpawnPoints.IsValidIndex(SpawnIndexCount))
       {
@@ -94,7 +90,7 @@ void AVehicleSpawnerBase::BeginPlay()
       NumberOfAttempts++;
     }
 	bool bAllSpawned = false;
-    if (NumberOfVehicles > SpawnIndexCount) 
+    if (NumberOfVehicles > SpawnIndexCount)
 	{
       UE_LOG(LogCarla, Warning, TEXT("Requested %d vehicles, but we were only able to spawn %d"), NumberOfVehicles, SpawnIndexCount);
     } else
@@ -102,12 +98,12 @@ void AVehicleSpawnerBase::BeginPlay()
 	  if(SpawnIndexCount == NumberOfVehicles)
 	  {
         bAllSpawned = true;
-	  } 
+	  }
     }
     if(!bAllSpawned)
     {
-      UE_LOG(LogCarla, Log, 
-	    TEXT("Starting the timer to spawn the other %d vehicles, one per %f seconds"), 
+      UE_LOG(LogCarla, Log,
+	    TEXT("Starting the timer to spawn the other %d vehicles, one per %f seconds"),
 	    NumberOfVehicles - SpawnIndexCount,
 	    TimeBetweenSpawnAttemptsAfterBegin
 	  );
@@ -126,7 +122,7 @@ void AVehicleSpawnerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AVehicleSpawnerBase::SetNumberOfVehicles(const int32 Count)
 {
-  if (Count > 0) 
+  if (Count > 0)
   {
     bSpawnVehicles = true;
     NumberOfVehicles = Count;
@@ -138,7 +134,7 @@ void AVehicleSpawnerBase::SetNumberOfVehicles(const int32 Count)
 void AVehicleSpawnerBase::TryToSpawnRandomVehicle()
 {
   auto SpawnPoint = GetRandomSpawnPoint();
-  if (SpawnPoint != nullptr) 
+  if (SpawnPoint != nullptr)
   {
       SpawnVehicleAtSpawnPoint(*SpawnPoint);
   } else {
@@ -156,7 +152,7 @@ ACarlaWheeledVehicle* AVehicleSpawnerBase::SpawnVehicleAtSpawnPoint(
     Vehicle->AIControllerClass = AWheeledVehicleAIController::StaticClass();
     Vehicle->SpawnDefaultController();
     auto Controller = GetController(Vehicle);
-    if (Controller != nullptr) 
+    if (Controller != nullptr)
 	{ // Sometimes fails...
       Controller->GetRandomEngine()->Seed(GetRandomEngine()->GenerateSeed());
       Controller->SetRoadMap(GetRoadMap());
@@ -173,12 +169,12 @@ ACarlaWheeledVehicle* AVehicleSpawnerBase::SpawnVehicleAtSpawnPoint(
 
 void AVehicleSpawnerBase::SpawnVehicleAttempt()
 {
-	if(Vehicles.Num()>=NumberOfVehicles) 
+	if(Vehicles.Num()>=NumberOfVehicles)
 	{
 	  UE_LOG(LogCarla, Log, TEXT("All vehicles spawned correctly"));
 	  return;
 	}
-	
+
 	APlayerStart* spawnpoint = GetRandomSpawnPoint();
 	APawn* playerpawn = UGameplayStatics::GetPlayerPawn(GetWorld(),0);
 	const float DistanceToPlayer = playerpawn&&spawnpoint? FVector::Distance(playerpawn->GetActorLocation(),spawnpoint->GetActorLocation()):0.0f;
@@ -193,7 +189,7 @@ void AVehicleSpawnerBase::SpawnVehicleAttempt()
 	{
 	  NextTime /= 2.0f;
 	}
-	
+
 	if(Vehicles.Num()<NumberOfVehicles)
 	{
 	  auto &timemanager = GetWorld()->GetTimerManager();

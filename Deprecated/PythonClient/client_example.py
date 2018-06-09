@@ -47,9 +47,9 @@ def run_carla_client(args):
                 settings.set(
                     SynchronousMode=True,
                     SendNonPlayerAgentsInfo=True,
-                    NumberOfVehicles=20,
-                    NumberOfPedestrians=40,
-                    WeatherId=random.choice([1, 3, 7, 8, 14]),
+                    NumberOfVehicles=2,
+                    NumberOfPedestrians=0,
+                    WeatherId=random.choice([1,]),
                     QualityLevel=args.quality_level)
                 settings.randomize_seeds()
 
