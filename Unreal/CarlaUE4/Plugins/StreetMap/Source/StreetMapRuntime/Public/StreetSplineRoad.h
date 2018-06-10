@@ -5,13 +5,47 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-#include "MapGen/SplineCityMapMeshTag.h"
+#include "StreetMapMeshTag.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-#include "SplineRoad.generated.h"
+#include "StreetSplineRoad.generated.h"
+
+USTRUCT(BlueprintType)
+struct STREETMAPRUNTIME_API FStreetRoadDescriptor
+{
+  GENERATED_BODY()
+
+public:
+
+  FStreetRoadDescriptor(){}
+
+  FStreetRoadDescriptor(const TArray<FVector>& InKnots,
+                  const FVector& InStartTangent,
+                  const FVector& InEndTangent,
+                  const float& InTangentLength) :
+    Knots(InKnots),
+    StartTangent(InStartTangent),
+    EndTangent(InEndTangent),
+    TangentLength(InTangentLength)
+  {
+
+  }
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TArray<FVector> Knots;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  FVector StartTangent;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  FVector EndTangent;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  float TangentLength;
+};
 
 UCLASS()
-class CARLA_API ASplineRoad : public AActor
+class STREETMAPRUNTIME_API AStreetSplineRoad : public AActor
 {
   GENERATED_BODY()
 
@@ -22,7 +56,7 @@ class CARLA_API ASplineRoad : public AActor
   /// @{
 public:
 
-  ASplineRoad(const FObjectInitializer& ObjectInitializer);
+  AStreetSplineRoad(const FObjectInitializer& ObjectInitializer);
 
 protected:
 

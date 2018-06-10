@@ -5,42 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "MapGen/SplineCityMapMeshTag.h"
 
-#include "MapGen/SplineRoad.h"
+#include "UberDev/MapGen/SplineRoad.h"
 #include "SplineCityMapGenerator.generated.h"
-
-USTRUCT(BlueprintType)
-struct CARLA_API FRoadDescriptor
-{
-  GENERATED_BODY()
-
-public:
-
-  FRoadDescriptor(){}
-
-  FRoadDescriptor(const TArray<FVector>& InKnots,
-                  const FVector& InStartTangent,
-                  const FVector& InEndTangent,
-                  const float& InTangentLength) :
-    Knots(InKnots),
-    StartTangent(InStartTangent),
-    EndTangent(InEndTangent),
-    TangentLength(InTangentLength)
-  {
-
-  }
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
-  TArray<FVector> Knots;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
-  FVector StartTangent;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
-  FVector EndTangent;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
-  float TangentLength;
-};
 
 /**
  *
