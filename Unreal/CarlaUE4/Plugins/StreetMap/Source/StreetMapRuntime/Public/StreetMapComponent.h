@@ -186,4 +186,25 @@ protected:
 	UPROPERTY()
 		UMaterialInterface* StreetMapDefaultMaterial;
 
+
+
+
+    /// @}
+    // ===========================================================================
+    /// @name Map representation
+    // ===========================================================================
+    /// @{
+private:
+
+  /// Add road descriptor
+  void AddRoadDescriptor(const TArray<FVector>& Knots,
+                         const FVector& StartTangent,
+                         const FVector& EndTangent,
+                         EStreetMapMeshTag Tag);
+
+public:
+
+  UPROPERTY(Category = "Map representation", EditAnywhere)
+  TArray<FStreetRoadDescriptor> MapSkeleton;
+
 };

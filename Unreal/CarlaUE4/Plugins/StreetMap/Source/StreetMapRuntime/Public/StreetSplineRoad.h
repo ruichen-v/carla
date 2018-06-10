@@ -22,13 +22,14 @@ public:
   FStreetRoadDescriptor(const TArray<FVector>& InKnots,
                   const FVector& InStartTangent,
                   const FVector& InEndTangent,
-                  const float& InTangentLength) :
+                  const float& InTangentLength,
+                  EStreetMapMeshTag InTag):
     Knots(InKnots),
     StartTangent(InStartTangent),
     EndTangent(InEndTangent),
     TangentLength(InTangentLength)
   {
-
+    Tag = InTag;
   }
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -39,6 +40,9 @@ public:
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FVector EndTangent;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  EStreetMapMeshTag Tag;
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   float TangentLength;

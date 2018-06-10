@@ -65,6 +65,7 @@ void ASplineCityMapGenerator::PostEditChangeProperty(FPropertyChangedEvent& Prop
   Super::PostEditChangeProperty(PropertyChangedEvent);
   if (PropertyChangedEvent.Property)
   {
+    UE_LOG(LogCarla, Log, TEXT("SplineCityMapGenerator: DeleteRoads."));
     DeleteRoads();
     UpdateTagMap();
     UpdateMap();
@@ -215,6 +216,7 @@ void ASplineCityMapGenerator::AddRoadDescriptor(const TArray<FVector>& Knots,
 
 void ASplineCityMapGenerator::OnConstruction(const FTransform &Transform)
 {
+  UE_LOG(LogCarla, Log, TEXT("SplineCityMapGenerator: OnConstruction."));
   Super::OnConstruction(Transform);
   //TEMP INIT start
   if (MapSkeleton.Num()==0)

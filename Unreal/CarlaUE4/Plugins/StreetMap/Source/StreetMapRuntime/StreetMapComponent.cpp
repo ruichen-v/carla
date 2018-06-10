@@ -248,6 +248,8 @@ void UStreetMapComponent::GenerateMesh()
 		const auto& Nodes = StreetMap->GetNodes();
 		const auto& Buildings = StreetMap->GetBuildings();
 
+    MapSkeleton.Empty();
+
 		for( const auto& Road : Roads )
 		{
 			float RoadThickness = StreetThickness;
@@ -273,19 +275,38 @@ void UStreetMapComponent::GenerateMesh()
 					break;
 			}
 
+      TArray<FVector> Knots;
+      FVector StartTangent;
+      FVector EndTangent;
+      float TangentLength = 1.0f;
+
 			for( int32 PointIndex = 0; PointIndex < Road.RoadPoints.Num() - 1; ++PointIndex )
 			{
-				AddThick2DLine(
-					Road.RoadPoints[ PointIndex ],
-					Road.RoadPoints[ PointIndex + 1 ],
+        auto& RoadPointA = Road.RoadPoints[ PointIndex ];
+        auto& RoadPointB = Road.RoadPoints[ PointIndex + 1 ];
+        Knots.Emplace(FVector(RoadPointA.X, RoadPointA.Y, 0.0f));
+
+        if (PointIndex == 0)
+        {
+          StartTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
+        }
+        else if (PointIndex == Road.RoadPoints.Num() - 2)
+        {
+          EndTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
+          Knots.Emplace(FVector(RoadPointB.X, RoadPointB.Y, 0.0f));
+        }
+
+        AddThick2DLine(
+					RoadPointA,
+          RoadPointB,
 					RoadZ,
 					RoadThickness,
 					RoadColor,
 					RoadColor,
 					MeshBoundingBox );
-
-
 			}
+      // MARK TODO switch on road tags
+      AddRoadDescriptor(Knots, StartTangent, EndTangent, EStreetMapMeshTag::RoadTwoLanes_NoSide);
 		}
 
 		TArray< int32 > TempIndices;
@@ -631,4 +652,13 @@ void UStreetMapComponent::AddTriangles( const TArray<FVector>& Points, const TAr
 FString UStreetMapComponent::GetStreetMapAssetName() const
 {
 	return StreetMap != nullptr ? StreetMap->GetName() : FString(TEXT("NONE"));
+}
+
+void UStreetMapComponent::AddRoadDescriptor(const TArray<FVector>& Knots,
+                                            const FVector& StartTangent,
+                                            const FVector& EndTangent,
+                                            EStreetMapMeshTag Tag)
+{
+  FStreetRoadDescriptor NewRoad(Knots, StartTangent, EndTangent, /*InTangentLength = */1.0f, Tag);
+  MapSkeleton.Add(NewRoad);
 }

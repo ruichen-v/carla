@@ -8,7 +8,7 @@
 AStreetSplineRoad::AStreetSplineRoad(const FObjectInitializer& ObjectInitializer) :
   Super(ObjectInitializer)
 {
-  // UE_LOG(LogCarla, Log, TEXT("StreetSplineRoad: Constructed with ObjectInitializer."));
+  // UE_LOG(LogTemp, Warning, TEXT("AStreetSplineRoad::Construct StreetSplineRoadInstance"));
   PrimaryActorTick.bCanEverTick = false;
   RootComponent =
       ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("TopScene"));
@@ -82,7 +82,7 @@ void AStreetSplineRoad::GenerateRoadSegments()
     // Forward axis should always be X
 
     // Attach to root
-    SplineMesh->AttachToComponent(RoadSkeleton, FAttachmentTransformRules::KeepRelativeTransform);
+    SplineMesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
     SplineMesh->SetHiddenInGame(false);
   }
 }
@@ -100,8 +100,8 @@ void AStreetSplineRoad::GenerateRoadSegments()
 // }
 
 void AStreetSplineRoad::SetRoadSkeleton(const TArray<FVector>& knots,
-                                  const FVector& HeadTangent,
-                                  const FVector& TailTangent)
+                                        const FVector& HeadTangent,
+                                        const FVector& TailTangent)
 {
   RoadSkeleton->ClearSplinePoints();
   for (int32 i=0; i<knots.Num(); ++i)
