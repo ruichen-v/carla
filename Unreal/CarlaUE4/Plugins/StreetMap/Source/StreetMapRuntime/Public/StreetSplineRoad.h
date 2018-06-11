@@ -11,15 +11,15 @@
 #include "StreetSplineRoad.generated.h"
 
 USTRUCT(BlueprintType)
-struct STREETMAPRUNTIME_API FStreetRoadDescriptor
+struct STREETMAPRUNTIME_API FRoadSkeletonDescriptor
 {
   GENERATED_BODY()
 
 public:
 
-  FStreetRoadDescriptor(){}
+  FRoadSkeletonDescriptor(){}
 
-  FStreetRoadDescriptor(const TArray<FVector>& InKnots,
+  FRoadSkeletonDescriptor(const TArray<FVector>& InKnots,
                   const FVector& InStartTangent,
                   const FVector& InEndTangent,
                   const float& InTangentLength,
@@ -48,6 +48,31 @@ public:
   float TangentLength;
 };
 
+USTRUCT(BlueprintType)
+struct STREETMAPRUNTIME_API FRoadMeshDescriptor
+{
+  GENERATED_BODY()
+
+public:
+
+  FRoadMeshDescriptor() : Mesh(nullptr), ForwardAxis(ESplineMeshAxis::X)
+  {
+
+  }
+
+  FRoadMeshDescriptor(UStaticMesh *InMesh, ESplineMeshAxis::Type InAxis)
+  {
+    Mesh = InMesh;
+    ForwardAxis = InAxis;
+  }
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  UStaticMesh *Mesh;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
+};
+
 UCLASS()
 class STREETMAPRUNTIME_API AStreetSplineRoad : public AActor
 {
@@ -74,7 +99,7 @@ protected:
 public:
 
   UFUNCTION(BlueprintCallable)
-  void SetRoadMesh(UStaticMesh *InRoadMesh);
+  void SetRoadMesh(UStaticMesh *InRoadMesh, ESplineMeshAxis::Type Axis);
 
   UFUNCTION(BlueprintCallable)
   void SetRoadSkeleton(const TArray<FVector>& knots,
@@ -100,6 +125,9 @@ protected:
 
   UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", EditAnyWhere, EditFixedSize)
   UStaticMesh *RoadMesh;
+
+  UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", EditAnyWhere, EditFixedSize)
+  TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis;
 
   // UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", VisibleAnyWhere)
   // TArray<USplineMeshComponent *> RoadSegments;

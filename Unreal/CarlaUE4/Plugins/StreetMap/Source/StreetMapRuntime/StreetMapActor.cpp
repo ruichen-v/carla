@@ -17,6 +17,7 @@ AStreetMapActor::AStreetMapActor(const FObjectInitializer& ObjectInitializer)
 
   for (tag_size_t i = 0u; i < NUMBER_OF_SPTAGS; ++i) {
     // Add static mesh holder.
+    // UE_LOG(LogTemp, Warning, TEXT("add to StaticMesh"));
     StaticMeshes.Add(StreetMapMeshTag::FromUInt(i));
   }
 }
@@ -24,12 +25,12 @@ AStreetMapActor::AStreetMapActor(const FObjectInitializer& ObjectInitializer)
 void AStreetMapActor::OnConstruction(const FTransform &Transform)
 {
   Super::OnConstruction(Transform);
-  UE_LOG(LogTemp, Warning, TEXT("AStreetMapActor::OnConstruction"));
+  // UE_LOG(LogTemp, Warning, TEXT("AStreetMapActor::OnConstruction"));
 }
 
 void AStreetMapActor::PostInitializeComponents()
 {
-  UE_LOG(LogTemp, Warning, TEXT("AStreetMapActor::PostInitializeComponents"));
+  // UE_LOG(LogTemp, Warning, TEXT("AStreetMapActor::PostInitializeComponents"));
   Super::PostInitializeComponents();
   if(IsValid(GetLevel())&&!GetLevel()->IsPendingKill())
   {
@@ -48,7 +49,7 @@ void AStreetMapActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
   Super::PostEditChangeProperty(PropertyChangedEvent);
   if (PropertyChangedEvent.Property)
   {
-    UE_LOG(LogTemp, Warning, TEXT("AStreetMapActor::PostEditChangeProperty"));
+    // UE_LOG(LogTemp, Warning, TEXT("AStreetMapActor::PostEditChangeProperty"));
     DeleteRoads();
     UpdateTagMap();
     UpdateMap();
@@ -67,14 +68,14 @@ void AStreetMapActor::UpdateTagMap()
 
   for (auto &TagMeshPair: StaticMeshes)
   {
-    TagMap.Add(TagMeshPair.Value, TagMeshPair.Key);
+    TagMap.Add(TagMeshPair.Value.Mesh, TagMeshPair.Key);
   }
 }
 
 /// Set the static mesh associated with @a Tag.
-void AStreetMapActor::SetStaticMesh(EStreetMapMeshTag Tag, UStaticMesh *Mesh)
+void AStreetMapActor::SetStaticMesh(EStreetMapMeshTag Tag, UStaticMesh *Mesh, ESplineMeshAxis::Type Axis)
 {
-  StaticMeshes[Tag] = Mesh;
+  StaticMeshes[Tag] = FRoadMeshDescriptor(Mesh, Axis);
   if (Mesh != nullptr) {
     //Map key is unique
     TagMap.Add(Mesh, Tag);
@@ -84,13 +85,20 @@ void AStreetMapActor::SetStaticMesh(EStreetMapMeshTag Tag, UStaticMesh *Mesh)
 /// Return the static mesh corresponding to @a Tag.
 UStaticMesh *AStreetMapActor::GetStaticMesh(EStreetMapMeshTag Tag)
 {
-  return StaticMeshes[Tag];
+  // UE_LOG(LogTemp, Warning, TEXT("AStreetMapActor::GetStaticMesh"));
+  return StaticMeshes[Tag].Mesh;
 }
 
 /// Return the static mesh corresponding to @a Tag.
 const UStaticMesh *AStreetMapActor::GetStaticMesh(EStreetMapMeshTag Tag) const
 {
-  return StaticMeshes[Tag];
+  return StaticMeshes[Tag].Mesh;
+}
+
+/// Return the static mesh corresponding to @a Tag.
+TEnumAsByte<ESplineMeshAxis::Type> AStreetMapActor::GetMeshForwardAxis(EStreetMapMeshTag Tag)
+{
+  return StaticMeshes[Tag].ForwardAxis;
 }
 
 /// Return the tag corresponding to @a StaticMesh.
@@ -153,7 +161,7 @@ void AStreetMapActor::UpdateMap()
   }
 }
 
-void AStreetMapActor::AddRoadInstance(const FStreetRoadDescriptor& RoadDescriptor)
+void AStreetMapActor::AddRoadInstance(const FRoadSkeletonDescriptor& RoadDescriptor)
 {
   /// Create USplineComponent for road skeleton
   if (GetStaticMesh(RoadDescriptor.Tag) == nullptr)
@@ -172,7 +180,8 @@ void AStreetMapActor::AddRoadInstance(const FStreetRoadDescriptor& RoadDescripto
     GetWorld()->SpawnActor(AStreetSplineRoad::StaticClass(), &Location, &Rotation, params));
   StreetSplineRoadActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
   // Configure road segment
-  StreetSplineRoadActor->SetRoadMesh(GetStaticMesh(RoadDescriptor.Tag));
+  StreetSplineRoadActor->SetRoadMesh(
+    GetStaticMesh(RoadDescriptor.Tag), GetMeshForwardAxis(RoadDescriptor.Tag));
   StreetSplineRoadActor->SetRoadSkeleton(
                   RoadDescriptor.Knots,
                   RoadDescriptor.StartTangent*RoadDescriptor.TangentLength,

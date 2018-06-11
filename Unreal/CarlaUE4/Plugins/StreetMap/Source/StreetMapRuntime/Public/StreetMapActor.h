@@ -39,13 +39,16 @@ protected:
   void UpdateTagMap();
 
   /// Set the static mesh associated with @a Tag.
-  void SetStaticMesh(EStreetMapMeshTag Tag, UStaticMesh *Mesh);
+  void SetStaticMesh(EStreetMapMeshTag Tag, UStaticMesh *Mesh, ESplineMeshAxis::Type);
 
   /// Return the static mesh corresponding to @a Tag.
   UStaticMesh *GetStaticMesh(EStreetMapMeshTag Tag);
 
   /// Return the static mesh corresponding to @a Tag.
   const UStaticMesh *GetStaticMesh(EStreetMapMeshTag Tag) const;
+
+  /// Return forward axis corresponding to @a Tag.
+  TEnumAsByte<ESplineMeshAxis::Type> GetMeshForwardAxis(EStreetMapMeshTag Tag);
 
   /// Return the tag corresponding to @a StaticMesh.
   EStreetMapMeshTag GetTag(const UStaticMesh &StaticMesh) const;
@@ -73,7 +76,7 @@ private:
   void UpdateMap();
 
   /// Add road instance (no intersection)
-  void AddRoadInstance(const FStreetRoadDescriptor& RoadDescriptor);
+  void AddRoadInstance(const FRoadSkeletonDescriptor& RoadDescriptor);
 
   /// Add the road meshes to the scene based on the current MAP REPRESENTATION.
   void GenerateRoads();
@@ -131,7 +134,7 @@ private:
 private:
 
   UPROPERTY(Category = "Meshes", EditAnywhere)
-  TMap<EStreetMapMeshTag, UStaticMesh *> StaticMeshes;
+  TMap<EStreetMapMeshTag, FRoadMeshDescriptor> StaticMeshes;
 
   UPROPERTY(Category = "Meshes", VisibleAnywhere)
   TMap<UStaticMesh *, EStreetMapMeshTag> TagMap;

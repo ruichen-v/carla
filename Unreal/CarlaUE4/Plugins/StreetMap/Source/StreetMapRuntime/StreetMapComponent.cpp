@@ -249,7 +249,7 @@ void UStreetMapComponent::GenerateMesh()
 		const auto& Buildings = StreetMap->GetBuildings();
 
     MapSkeleton.Empty();
-
+    int32 tmpcnt = 0;
 		for( const auto& Road : Roads )
 		{
 			float RoadThickness = StreetThickness;
@@ -290,7 +290,7 @@ void UStreetMapComponent::GenerateMesh()
         {
           StartTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
         }
-        else if (PointIndex == Road.RoadPoints.Num() - 2)
+        if (PointIndex == Road.RoadPoints.Num() - 2)
         {
           EndTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
           Knots.Emplace(FVector(RoadPointB.X, RoadPointB.Y, 0.0f));
@@ -305,6 +305,11 @@ void UStreetMapComponent::GenerateMesh()
 					RoadColor,
 					MeshBoundingBox );
 			}
+      // UE_LOG(LogTemp, Warning, TEXT("UStreetMapComponent::GenerateMesh: generate descriptor %d"), tmpcnt++);
+      // for (int i=0; i<Knots.Num(); ++i)
+      // {
+      //   UE_LOG(LogTemp, Warning, TEXT("knot id - %d: X = %f, Y = %f"), i, Knots[i].X, Knots[i].Y);
+      // }
       // MARK TODO switch on road tags
       AddRoadDescriptor(Knots, StartTangent, EndTangent, EStreetMapMeshTag::RoadTwoLanes_NoSide);
 		}
@@ -659,6 +664,6 @@ void UStreetMapComponent::AddRoadDescriptor(const TArray<FVector>& Knots,
                                             const FVector& EndTangent,
                                             EStreetMapMeshTag Tag)
 {
-  FStreetRoadDescriptor NewRoad(Knots, StartTangent, EndTangent, /*InTangentLength = */1.0f, Tag);
+  FRoadSkeletonDescriptor NewRoad(Knots, StartTangent, EndTangent, /*InTangentLength = */1.0f, Tag);
   MapSkeleton.Add(NewRoad);
 }

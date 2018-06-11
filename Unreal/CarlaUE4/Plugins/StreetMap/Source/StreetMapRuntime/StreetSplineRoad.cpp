@@ -74,6 +74,7 @@ void AStreetSplineRoad::GenerateRoadSegments()
     SplineMesh->SetMobility(EComponentMobility::Movable);
     // Set road mesh type
     SplineMesh->SetStaticMesh(RoadMesh);
+    SplineMesh->SetForwardAxis(ForwardAxis, true);
 
     // Set start and end
     SplineMesh->SetStartAndEnd(
@@ -122,9 +123,10 @@ void AStreetSplineRoad::SetRoadSkeleton(const TArray<FVector>& knots,
   GenerateRoadSegments();
 }
 
-void AStreetSplineRoad::SetRoadMesh(UStaticMesh *InRoadMesh)
+void AStreetSplineRoad::SetRoadMesh(UStaticMesh *InRoadMesh, ESplineMeshAxis::Type Axis)
 {
   RoadMesh = InRoadMesh;
+  ForwardAxis = Axis;
 }
 
 void AStreetSplineRoad::OnConstruction(const FTransform &Transform)

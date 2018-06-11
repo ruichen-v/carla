@@ -205,6 +205,6 @@ private:
 public:
 
   UPROPERTY(Category = "Map representation", EditAnywhere)
-  TArray<FStreetRoadDescriptor> MapSkeleton;
+  TArray<FRoadSkeletonDescriptor> MapSkeleton;
 
 };
