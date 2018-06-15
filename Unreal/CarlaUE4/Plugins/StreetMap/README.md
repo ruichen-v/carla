@@ -127,7 +127,7 @@ There are various loose ends.
 
 ### Compatibility
 
-This plug-in requires Visual Studio and either a C++ code project or the full Unreal Engine 4 source code from GitHub.  If you are new to programming in UE4, please see the official [Programming Guide](https://docs.unrealengine.com/latest/INT/Programming/index.html)! 
+This plug-in requires Visual Studio and either a C++ code project or the full Unreal Engine 4 source code from GitHub.  If you are new to programming in UE4, please see the official [Programming Guide](https://docs.unrealengine.com/latest/INT/Programming/index.html)!
 
 The Street Map plugin should work on all platforms that UE4 supports, but the latest version has not been tested on every platform.
 
@@ -137,8 +137,17 @@ We'll try to keep the source code up to date so that it works with new versions 
 ## Support
 
 I'm not planning to actively update the plugin on a regular basis, but if any critical fixes are contributed, I'll certainly try to review and integrate them.
- 
+
 For bugs, please [file an issue](https://github.com/ue4plugins/StreetMap/issues), submit a [pull request](https://github.com/ue4plugins/StreetMap/pulls?q=is%3Aopen+is%3Apr) or catch me [on Twitter](http://twitter.com/mike_fricker).
 
 Finally, a **big thanks** to the [OpenStreetMap Foundation](http://wiki.osmfoundation.org/wiki/Main_Page) and the fantastic community who contribute map data and maintain the database.
 
+## Road generator
+
+I enhanced the **StreetMapActor** with the ability to spawn road actors for autonomous vehicle simulation. Currently 4 road types (Highway, MajorRoad, Tertiary, Street) and 6 road meshes are supported. users can customize the mapping between combination of **RoadType** and **bIsOneWay** to road mesh tags. Static road meshes can be assigned to mesh tags in **StreetMapActor settings**.
+
+Two sample mappings are given. Please contact for video demos.
+
+![UE4StreetMapperUMAANorth](Docs/UE4StreetMapperUMAANorth.png)
+
+![UE4StreetMapperPittsburgh](Docs/UE4StreetMapperPittsburgh.png)
