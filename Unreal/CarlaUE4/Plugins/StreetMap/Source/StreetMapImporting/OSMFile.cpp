@@ -8,7 +8,7 @@ FOSMFile::FOSMFile()
 	: ParsingState( ParsingState::Root )
 {
 }
-		
+
 
 FOSMFile::~FOSMFile()
 {
@@ -19,7 +19,7 @@ FOSMFile::~FOSMFile()
 			delete Way;
 		}
 		Ways.Empty();
-				
+
 		for( auto HashPair : NodeMap )
 		{
 			FOSMNodeInfo* NodeInfo = HashPair.Value;
@@ -37,14 +37,14 @@ bool FOSMFile::LoadOpenStreetMapFile( FString& OSMFilePath, const bool bIsFilePa
 
 	FText ErrorMessage;
 	int32 ErrorLineNumber;
-	if( FFastXml::ParseXmlFile( 
-		this, 
-		bIsFilePathActuallyTextBuffer ? nullptr : *OSMFilePath, 
-		bIsFilePathActuallyTextBuffer ? OSMFilePath.GetCharArray().GetData() : nullptr, 
-		FeedbackContext, 
-		bShowSlowTaskDialog, 
-		bShowCancelButton, 
-		/* Out */ ErrorMessage, 
+	if( FFastXml::ParseXmlFile(
+		this,
+		bIsFilePathActuallyTextBuffer ? nullptr : *OSMFilePath,
+		bIsFilePathActuallyTextBuffer ? OSMFilePath.GetCharArray().GetData() : nullptr,
+		FeedbackContext,
+		bShowSlowTaskDialog,
+		bShowCancelButton,
+		/* Out */ ErrorMessage,
 		/* Out */ ErrorLineNumber ) )
 	{
 		if( NodeMap.Num() > 0 )
@@ -68,7 +68,7 @@ bool FOSMFile::LoadOpenStreetMapFile( FString& OSMFilePath, const bool bIsFilePa
 	return false;
 }
 
-		
+
 bool FOSMFile::ProcessXmlDeclaration( const TCHAR* ElementData, int32 XmlFileLineNumber )
 {
 	// Don't care about XML declaration
@@ -81,8 +81,8 @@ bool FOSMFile::ProcessComment( const TCHAR* Comment )
 	// Don't care about comments
 	return true;
 }
-	
-	
+
+
 bool FOSMFile::ProcessElement( const TCHAR* ElementName, const TCHAR* ElementData, int32 XmlFileLineNumber )
 {
 	if( ParsingState == ParsingState::Root )
@@ -137,7 +137,7 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			CurrentNodeInfo->Latitude = FPlatformString::Atod( AttributeValue );
 
 			AverageLatitude += CurrentNodeInfo->Latitude;
-					
+
 			// Update minimum and maximum latitude
 			// @todo: Performance: Instead of computing our own bounding box, we could parse the "minlat" and
 			//        "minlon" tags from the OSM file
@@ -155,7 +155,7 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			CurrentNodeInfo->Longitude = FPlatformString::Atod( AttributeValue );
 
 			AverageLongitude += CurrentNodeInfo->Longitude;
-					
+
 			// Update minimum and maximum longitude
 			if( CurrentNodeInfo->Longitude < MinLongitude )
 			{
@@ -178,7 +178,7 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			FOSMNodeInfo* ReferencedNode = NodeMap.FindRef( FPlatformString::Atoi64( AttributeValue ) );
 			const int NewNodeIndex = CurrentWayInfo->Nodes.Num();
 			CurrentWayInfo->Nodes.Add( ReferencedNode );
-					
+
 			// Update the node with information about the way that is referencing it
 			{
 				FOSMWayRef NewWayRef;
@@ -207,7 +207,7 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT( "highway" ) ) )
 			{
 				EOSMWayType WayType = EOSMWayType::Other;
-						
+
 				if( !FCString::Stricmp( AttributeValue, TEXT( "motorway" ) ) )
 				{
 					WayType = EOSMWayType::Motorway;
@@ -316,8 +316,8 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 				{
 					// Other type that we don't recognize yet.  See http://wiki.openstreetmap.org/wiki/Key:highway
 				}
-						
-						
+
+
 				CurrentWayInfo->WayType = WayType;
 			}
 			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT( "building" ) ) )
@@ -378,14 +378,14 @@ bool FOSMFile::ProcessClose( const TCHAR* Element )
 		NodeMap.Add( CurrentNodeID, CurrentNodeInfo );
 		CurrentNodeID = 0;
 		CurrentNodeInfo = nullptr;
-				
+
 		ParsingState = ParsingState::Root;
 	}
 	else if( ParsingState == ParsingState::Way )
 	{
 		Ways.Add( CurrentWayInfo );
 		CurrentWayInfo = nullptr;
-				
+
 		ParsingState = ParsingState::Root;
 	}
 	else if( ParsingState == ParsingState::Way_NodeRef )

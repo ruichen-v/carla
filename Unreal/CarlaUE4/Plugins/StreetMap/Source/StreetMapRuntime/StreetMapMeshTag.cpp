@@ -13,7 +13,7 @@
 
 EStreetMapMeshTag StreetMapMeshTag::GetBaseMeshTag()
 {
-  return EStreetMapMeshTag::RoadTwoLanes_NoSide;
+  return EStreetMapMeshTag::Road_2_Lanes_OneWay_Plain;
 }
 
 uint32 StreetMapMeshTag::GetRoadIntersectionSize()

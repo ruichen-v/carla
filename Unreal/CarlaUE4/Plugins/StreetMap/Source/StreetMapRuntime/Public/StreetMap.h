@@ -104,11 +104,11 @@ public:
 		bWant3DBuildings(true),
 		bWantLitBuildings(true),
 		StreetThickness(800.0f),
-		StreetColor(0.05f, 0.75f, 0.05f),
+		StreetColor(0.045791f, 0.279944f, 0.75f),
 		MajorRoadThickness(1000.0f),
-		MajorRoadColor(0.15f, 0.85f, 0.15f),
+		MajorRoadColor(0.85f, 0.623259f, 0.623259f),
 		HighwayThickness(1400.0f),
-		HighwayColor(FLinearColor(0.25f, 0.95f, 0.25f)),
+		HighwayColor(FLinearColor(0.95f, 0.135071f, 0.0f)),
 		BuildingBorderThickness(20.0f),
 		BuildingBorderLinearColor(0.85f, 0.85f, 0.85f),
 		BuildingBorderZ(10.0f)
@@ -125,13 +125,16 @@ enum EStreetMapRoadType
 {
 	/** Small road or residential street */
 	Street,
-	
-	/** Major road or minor state highway */
+
+  /** Roads connecting smaller settlements */
+	Tertiary,
+
+	/** Major road  */
 	MajorRoad,
-	
+
 	/** Highway */
 	Highway,
-	
+
 	/** Other (path, bus route, etc) */
 	Other,
 };
@@ -146,11 +149,11 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 	/** Name of the road */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	FString RoadName;
-	
+
 	/** Type of road */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	TEnumAsByte<EStreetMapRoadType> RoadType;
-	
+
 	/** Nodes along this road, one at each point in the RoadPoints list */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	TArray<int32> NodeIndices;
@@ -158,13 +161,13 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 	/** List of all of the points on this road, one for each node in the NodeIndices list */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	TArray<FVector2D> RoadPoints;
-	
+
 	// @todo: Performance: Bounding information could be computed at load time if we want to avoid the memory cost of storing it
 
 	/** 2D bounds (min) of this road's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	FVector2D BoundsMin;
-	
+
 	/** 2D bounds (max) of this road's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	FVector2D BoundsMax;
@@ -213,7 +216,7 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 };
 
 
-/** Nodes have a list of road refs, one for each road that intersects this node.  Each road ref references a road and also the 
+/** Nodes have a list of road refs, one for each road that intersects this node.  Each road ref references a road and also the
     point along that road where this node exists. */
 USTRUCT( BlueprintType )
 struct STREETMAPRUNTIME_API FStreetMapRoadRef
@@ -223,7 +226,7 @@ struct STREETMAPRUNTIME_API FStreetMapRoadRef
 	/** Index of road in the list of all roads in this street map */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	int32 RoadIndex;
-	
+
 	/** Index of the point along road where this node exists */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	int32 RoadPointIndex;
@@ -235,7 +238,7 @@ USTRUCT( BlueprintType )
 struct STREETMAPRUNTIME_API FStreetMapNode
 {
 	GENERATED_USTRUCT_BODY()
-	
+
 	/** All of the roads that intersect this node.  We have references to each of these roads, as well as the point along each
 	    road where this node exists */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
@@ -296,7 +299,7 @@ struct STREETMAPRUNTIME_API FStreetMapBuilding
 	/** 2D bounds (min) of this building's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	FVector2D BoundsMin;
-	
+
 	/** 2D bounds (max) of this building's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
 	FVector2D BoundsMax;
@@ -308,7 +311,7 @@ UCLASS()
 class STREETMAPRUNTIME_API UStreetMap : public UObject
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	/** Default constructor for UStreetMap */
@@ -316,7 +319,7 @@ public:
 
 	// UObject overrides
 	virtual void GetAssetRegistryTags( TArray<FAssetRegistryTag>& OutTags ) const override;
-	
+
 	/** Gets the roads in this street map (read only) */
 	const TArray<FStreetMapRoad>& GetRoads() const
 	{
@@ -328,7 +331,7 @@ public:
 	{
 		return Roads;
 	}
-	
+
 	/** Gets the nodes on the map (read only.)  Nodes describe intersections between roads */
 	const TArray<FStreetMapNode>& GetNodes() const
 	{
@@ -340,7 +343,7 @@ public:
 	{
 		return Nodes;
 	}
-	
+
 	/** Gets all of the buildings (read only) */
 	const TArray<FStreetMapBuilding>& GetBuildings() const
 	{
@@ -365,11 +368,11 @@ public:
 
 
 protected:
-	
+
 	/** List of roads */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere )
 	TArray<FStreetMapRoad> Roads;
-	
+
 	/** List of nodes on this map.  Nodes describe interesting points along roads, usually where roads intersect or at the end of a dead-end street */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere )
 	TArray<FStreetMapNode> Nodes;
@@ -381,7 +384,7 @@ protected:
 	/** 2D bounds (min) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)
 	FVector2D BoundsMin;
-	
+
 	/** 2D bounds (max) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)
 	FVector2D BoundsMax;
@@ -469,10 +472,10 @@ inline float FStreetMapRoad::ComputeDistanceBetweenNodesOnRoad( const class UStr
 		const FVector2D NextPointLocation = RoadPoints[ PointIndex + 1 ];
 
 		const float DistanceBetweenPoints = ( NextPointLocation - PointLocation ).Size();
-			
+
 		TotalDistanceSoFar += DistanceBetweenPoints;
 	}
-	
+
 	// @todo: Malformed data can cause this assertion to trigger.  This could be a single road with at least two adjacent nodes
 	//        at the exact same location.  We need to filter this out at load time probably.
 	// check( TotalDistanceSoFar > 0.0f );
@@ -513,7 +516,7 @@ inline void FStreetMapRoad::FindEarlierAndLaterNodesForPositionAlongRoad( const 
 				break;
 			}
 		}
-			
+
 		CurrentPointPositionAlongRoad = NextPointPositionAlongRoad;
 	}
 
@@ -595,7 +598,7 @@ inline FVector2D FStreetMapRoad::MakeLocationAlongRoad( const class UStreetMap& 
 			bFoundLocation = true;
 			break;
 		}
-			
+
 		CurrentPointPositionAlongRoad = NextPointPositionAlongRoad;
 	}
 
@@ -691,7 +694,7 @@ inline int32 FStreetMapNode::GetConnectionCount( const UStreetMap& StreetMap, co
 	for( const FStreetMapRoadRef& RoadRef : RoadRefs )
 	{
 		const FStreetMapRoad& Road = StreetMap.GetRoads()[ RoadRef.RoadIndex ];
-		
+
 		if( RoadRef.RoadPointIndex > 0 && ( !bIsTravelingForward || !Road.IsOneWay() ) )
 		{
 			// We connect to a node earlier up this road
@@ -725,7 +728,7 @@ inline const FStreetMapNode* FStreetMapNode::GetConnection( const UStreetMap& St
 	for( const FStreetMapRoadRef& RoadRef : RoadRefs )
 	{
 		const FStreetMapRoad& Road = StreetMap.GetRoads()[ RoadRef.RoadIndex ];
-		
+
 		// @todo: Performance: We could avoid the "while" loops below by not storing INDEX_NONEs in the NodeIndices array,
 		//        but instead mapping them to points by going through the node itself, then back to a road
 
@@ -829,7 +832,7 @@ inline float FStreetMapNode::GetConnectionCost( const UStreetMap& StreetMap, con
 	const FStreetMapNode& ConnectedNode = *GetConnection( StreetMap, ConnectionIndex, bIsTravelingForward, /* Out */ &ConnectingRoad, /* Out */ &MyPointIndexOnRoad, /* Out */ &ConnectedNodePointIndexOnRoad );
 
 	const float DistanceBetweenNodes = ConnectingRoad->ComputeDistanceBetweenNodesOnRoad( StreetMap, MyPointIndexOnRoad, ConnectedNodePointIndexOnRoad );
-	
+
 	float TotalCost = DistanceBetweenNodes;
 
 	// Apply some scaling to the cost of traveling between these nodes
@@ -865,5 +868,3 @@ inline float FStreetMapNode::GetConnectionCost( const UStreetMap& StreetMap, con
 
 	return TotalCost;
 }
-
-

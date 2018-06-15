@@ -250,6 +250,8 @@ void UStreetMapComponent::GenerateMesh()
 
     MapSkeleton.Empty();
     int32 tmpcnt = 0;
+    // MARK TODO switch on road tags
+    EStreetMapMeshTag MeshTag = EStreetMapMeshTag::Road_2_Lanes_OneWay_Plain;
 		for( const auto& Road : Roads )
 		{
 			float RoadThickness = StreetThickness;
@@ -259,15 +261,33 @@ void UStreetMapComponent::GenerateMesh()
 				case EStreetMapRoadType::Highway:
 					RoadThickness = HighwayThickness;
 					RoadColor = HighwayColor;
+          MeshTag = EStreetMapMeshTag::Road_3_Lanes_OneWay;
 					break;
 
 				case EStreetMapRoadType::MajorRoad:
 					RoadThickness = MajorRoadThickness;
 					RoadColor = MajorRoadColor;
+          MeshTag = Road.bIsOneWay ?
+                         EStreetMapMeshTag::Road_2_Lanes_OneWay :
+                         EStreetMapMeshTag::Road_2_Lanes_DoubleWay;
 					break;
 
+        case EStreetMapRoadType::Tertiary:
+          RoadThickness = MajorRoadThickness;
+          RoadColor = MajorRoadColor;
+          MeshTag = Road.bIsOneWay ?
+                         EStreetMapMeshTag::Road_2_Lanes_OneWay :
+                         EStreetMapMeshTag::Road_1_Lane_DoubleWay_Solid;
+          break;
+
 				case EStreetMapRoadType::Street:
+          MeshTag = Road.bIsOneWay ?
+                         EStreetMapMeshTag::Road_2_Lanes_OneWay_Plain :
+                         EStreetMapMeshTag::Road_1_Lane_DoubleWay_Dashed;
+          break;
 				case EStreetMapRoadType::Other:
+          // Should not see this type
+          check( 0 );
 					break;
 
 				default:
@@ -310,8 +330,8 @@ void UStreetMapComponent::GenerateMesh()
       // {
       //   UE_LOG(LogTemp, Warning, TEXT("knot id - %d: X = %f, Y = %f"), i, Knots[i].X, Knots[i].Y);
       // }
-      // MARK TODO switch on road tags
-      AddRoadDescriptor(Knots, StartTangent, EndTangent, EStreetMapMeshTag::RoadTwoLanes_NoSide);
+
+      AddRoadDescriptor(Knots, StartTangent, EndTangent, MeshTag);
 		}
 
 		TArray< int32 > TempIndices;

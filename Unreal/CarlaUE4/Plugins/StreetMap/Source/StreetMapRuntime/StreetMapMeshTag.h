@@ -13,10 +13,15 @@
 UENUM(BlueprintType)
 enum class EStreetMapMeshTag : uint8
 {
-  RoadTwoLanes_NoSide               UMETA(DisplayName = "Road: Two Lanes - No Side"),
+  Road_3_Lanes_OneWay            UMETA(DisplayName = "Road: Three Lanes - One Way"),
+  Road_2_Lanes_OneWay            UMETA(DisplayName = "Road: Two Lanes - One Way"),
+  Road_2_Lanes_OneWay_Plain      UMETA(DisplayName = "Road: Two Lanes - One Way - Plain"),
+  Road_2_Lanes_DoubleWay         UMETA(DisplayName = "Road: Two Lanes - Double Way"),
+  Road_1_Lane_DoubleWay_Solid    UMETA(DisplayName = "Road: One Lane - Double Way - Solid Lane Mark"),
+  Road_1_Lane_DoubleWay_Dashed   UMETA(DisplayName = "Road: One Lane - Double Way - Dashed Lane Mark"),
 
-  NUMBER_OF_TAGS         UMETA(Hidden),
-  INVALID                UMETA(Hidden)
+  NUMBER_OF_TAGS                 UMETA(Hidden),
+  INVALID                        UMETA(Hidden)
 };
 
 /// Helper class for working with EStreetMapMeshTag.
