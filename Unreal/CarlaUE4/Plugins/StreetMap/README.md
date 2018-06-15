@@ -150,4 +150,10 @@ Two sample mappings are given. Please contact **Rui Chen**(richen@umich.edu) for
 
 ![UE4StreetMapperUMAANorth](Docs/UE4StreetMapper_UMAANorth.png)
 
+![UE4StreetMapper_RoundAbout](Docs/UE4StreetMapper_RoundAbout.png)
+
 ![UE4StreetMapperPittsburgh](Docs/UE4StreetMapper_Pittsburgh.png)
+
+![UE4StreetMapper_Sqaure](Docs/UE4StreetMapper_Sqaure.png)
+
+![UE4StreetMapper_Motorway](Docs/UE4StreetMapper_Motorway.png)
