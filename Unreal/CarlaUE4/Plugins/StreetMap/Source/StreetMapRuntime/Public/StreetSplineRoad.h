@@ -102,7 +102,7 @@ protected:
 public:
 
   UFUNCTION(BlueprintCallable)
-  void SetRoadMesh(UStaticMesh *InRoadMesh, ESplineMeshAxis::Type Axis);
+  void SetRoadMesh(EStreetMapMeshTag Tag, UStaticMesh *InRoadMesh, ESplineMeshAxis::Type Axis);
 
   UFUNCTION(BlueprintCallable)
   void SetRoadSkeleton(const TArray<FVector>& knots,
@@ -125,6 +125,9 @@ protected:
   /// @{
 protected:
   /// Road assets
+
+  UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", EditAnyWhere, EditFixedSize)
+  EStreetMapMeshTag Tag;
 
   UPROPERTY(BlueprintReadWrite, Category = "Road Mesh", EditAnyWhere, EditFixedSize)
   UStaticMesh *RoadMesh;

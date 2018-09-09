@@ -184,7 +184,7 @@ void AStreetMapActor::AddRoadInstance(const FRoadSkeletonDescriptor& RoadDescrip
     GetWorld()->SpawnActor(AStreetSplineRoad::StaticClass(), &Location, &Rotation, params));
   StreetSplineRoadActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
   // Configure road segment
-  StreetSplineRoadActor->SetRoadMesh(
+  StreetSplineRoadActor->SetRoadMesh(RoadDescriptor.Tag,
     GetStaticMesh(RoadDescriptor.Tag), GetMeshForwardAxis(RoadDescriptor.Tag));
   StreetSplineRoadActor->SetRoadSkeleton(
                   RoadDescriptor.Knots,

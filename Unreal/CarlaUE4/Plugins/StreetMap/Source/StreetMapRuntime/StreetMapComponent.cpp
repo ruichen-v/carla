@@ -274,7 +274,6 @@ void UStreetMapComponent::GenerateMesh()
 
         case EStreetMapRoadType::Tertiary:
           RoadThickness = MajorRoadThickness;
-          RoadColor = MajorRoadColor;
           MeshTag = Road.bIsOneWay ?
                          EStreetMapMeshTag::Road_2_Lanes_OneWay :
                          EStreetMapMeshTag::Road_1_Lane_DoubleWay_Solid;

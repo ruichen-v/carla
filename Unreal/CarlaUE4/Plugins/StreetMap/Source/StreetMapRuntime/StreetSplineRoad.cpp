@@ -126,8 +126,10 @@ void AStreetSplineRoad::SetRoadSkeleton(const TArray<FVector>& knots,
   GenerateRoadSegments();
 }
 
-void AStreetSplineRoad::SetRoadMesh(UStaticMesh *InRoadMesh, ESplineMeshAxis::Type Axis)
+void AStreetSplineRoad::SetRoadMesh(
+  EStreetMapMeshTag InTag, UStaticMesh *InRoadMesh, ESplineMeshAxis::Type Axis)
 {
+  Tag = InTag;
   RoadMesh = InRoadMesh;
   ForwardAxis = Axis;
 }
