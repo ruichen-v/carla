@@ -245,6 +245,10 @@ void UStreetMapComponent::GenerateMesh()
 		const auto& Nodes = StreetMap->GetNodes();
 		const auto& Buildings = StreetMap->GetBuildings();
 
+    MapSkeleton.Empty();
+    int32 tmpcnt = 0;
+    // MARK TODO switch on road tags
+    EStreetMapMeshTag MeshTag = EStreetMapMeshTag::Road_2_Lanes_OneWay_Plain;
 		for( const auto& Road : Roads )
 		{
 			float RoadThickness = StreetThickness;
@@ -254,15 +258,32 @@ void UStreetMapComponent::GenerateMesh()
 				case EStreetMapRoadType::Highway:
 					RoadThickness = HighwayThickness;
 					RoadColor = HighwayColor;
+          MeshTag = EStreetMapMeshTag::Road_3_Lanes_OneWay;
 					break;
 
 				case EStreetMapRoadType::MajorRoad:
 					RoadThickness = MajorRoadThickness;
 					RoadColor = MajorRoadColor;
+          MeshTag = Road.bIsOneWay ?
+                         EStreetMapMeshTag::Road_2_Lanes_OneWay :
+                         EStreetMapMeshTag::Road_2_Lanes_DoubleWay;
 					break;
 
+        case EStreetMapRoadType::Tertiary:
+          RoadThickness = MajorRoadThickness;
+          MeshTag = Road.bIsOneWay ?
+                         EStreetMapMeshTag::Road_2_Lanes_OneWay :
+                         EStreetMapMeshTag::Road_1_Lane_DoubleWay_Solid;
+          break;
+
 				case EStreetMapRoadType::Street:
+          MeshTag = Road.bIsOneWay ?
+                         EStreetMapMeshTag::Road_2_Lanes_OneWay_Plain :
+                         EStreetMapMeshTag::Road_1_Lane_DoubleWay_Dashed;
+          break;
 				case EStreetMapRoadType::Other:
+          // Should not see this type
+          check( 0 );
 					break;
 
 				default:
@@ -270,17 +291,43 @@ void UStreetMapComponent::GenerateMesh()
 					break;
 			}
 
+      TArray<FVector> Knots;
+      FVector StartTangent;
+      FVector EndTangent;
+      float TangentLength = 1.0f;
+
 			for( int32 PointIndex = 0; PointIndex < Road.RoadPoints.Num() - 1; ++PointIndex )
 			{
-				AddThick2DLine(
-					Road.RoadPoints[ PointIndex ],
-					Road.RoadPoints[ PointIndex + 1 ],
+        auto& RoadPointA = Road.RoadPoints[ PointIndex ];
+        auto& RoadPointB = Road.RoadPoints[ PointIndex + 1 ];
+        Knots.Emplace(FVector(RoadPointA.X, RoadPointA.Y, 0.0f));
+
+        if (PointIndex == 0)
+        {
+          StartTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
+        }
+        if (PointIndex == Road.RoadPoints.Num() - 2)
+        {
+          EndTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
+          Knots.Emplace(FVector(RoadPointB.X, RoadPointB.Y, 0.0f));
+        }
+
+        AddThick2DLine(
+					RoadPointA,
+          RoadPointB,
 					RoadZ,
 					RoadThickness,
 					RoadColor,
 					RoadColor,
 					MeshBoundingBox );
 			}
+      // UE_LOG(LogTemp, Warning, TEXT("UStreetMapComponent::GenerateMesh: generate descriptor %d"), tmpcnt++);
+      // for (int i=0; i<Knots.Num(); ++i)
+      // {
+      //   UE_LOG(LogTemp, Warning, TEXT("knot id - %d: X = %f, Y = %f"), i, Knots[i].X, Knots[i].Y);
+      // }
+
+      AddRoadDescriptor(Knots, StartTangent, EndTangent, MeshTag);
 		}
 
 		TArray< int32 > TempIndices;
@@ -626,4 +673,13 @@ void UStreetMapComponent::AddTriangles( const TArray<FVector>& Points, const TAr
 FString UStreetMapComponent::GetStreetMapAssetName() const
 {
 	return StreetMap != nullptr ? StreetMap->GetName() : FString(TEXT("NONE"));
+}
+
+void UStreetMapComponent::AddRoadDescriptor(const TArray<FVector>& Knots,
+                                            const FVector& StartTangent,
+                                            const FVector& EndTangent,
+                                            EStreetMapMeshTag Tag)
+{
+  FRoadSkeletonDescriptor NewRoad(Knots, StartTangent, EndTangent, /*InTangentLength = */1.0f, Tag);
+  MapSkeleton.Add(NewRoad);
 }
