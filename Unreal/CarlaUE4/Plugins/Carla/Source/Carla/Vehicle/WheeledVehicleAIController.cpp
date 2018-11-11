@@ -203,6 +203,12 @@ void AWheeledVehicleAIController::TickAutopilotController()
 
   check(Vehicle != nullptr);
 
+  if (RoadMap == nullptr) {
+    // MARK: override roadmap
+    UE_LOG(LogCarla, Error, TEXT("Controller doesn't have a road map!"));
+    // return;
+  }
+
   FVector Direction;
 
   float Steering;
@@ -311,12 +317,19 @@ float AWheeledVehicleAIController::GoToNextTargetLocation(FVector &Direction)
   }
 
   Vehicle->SetAIVehicleState(ECarlaWheeledVehicleState::FollowingFixedRoute);
+
+  UE_LOG(LogCarla, Log, TEXT("FollowingFixedRoute!"));
   return Steering;
 }
 
 float AWheeledVehicleAIController::CalcStreeringValue(FVector &direction)
 {
   float steering = 0;
+
+  // MARK disable freedriving.
+  Vehicle->SetAIVehicleState(ECarlaWheeledVehicleState::FreeDriving);
+  return steering;
+
   FVector BoxExtent = Vehicle->GetVehicleBoundingBoxExtent();
   FVector forward = Vehicle->GetActorForwardVector();
 

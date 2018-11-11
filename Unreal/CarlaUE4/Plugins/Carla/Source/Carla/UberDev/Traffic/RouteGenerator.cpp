@@ -12,9 +12,36 @@
 void ARouteGenerator::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
   Super::PostEditChangeProperty(PropertyChangedEvent);
-  UpdateRoutePointNumbers();
+  if (PropertyChangedEvent.Property)
+  {
+    DeleteRoutes();
+    UpdateRoutes();
+  }
 }
 #endif // WITH_EDITOR
+
+void ARouteGenerator::DeleteRoutes()
+{
+  // UE_LOG(LogCarla, Warning, TEXT("ARouteGenerator::DeleteRoadNum  %d"), Routes.Num());
+  for (int32 i=Routes.Num()-1; i>=0; --i)
+  {
+    // UE_LOG(LogCarla, Warning, TEXT("ARouteGenerator::DeleteRoad - %d"), i);
+    Routes[i]->UnregisterComponent();
+  }
+  Routes.Reset(0);
+}
+
+void ARouteGenerator::UpdateRoutes()
+{
+    GenerateRouteFromDataTable();
+    if (bTriggerLaneChangeGeneration) {
+        bTriggerLaneChangeGeneration = false;
+        // _MARK TODO call navigation-related info generator here
+        AddLaneChangeRoute();
+    }
+    UpdateRoutePointNumbers();
+    ResetRoutePossibilities();
+}
 
 void ARouteGenerator::UpdateRoutePointNumbers()
 {
@@ -42,54 +69,50 @@ ARouteGenerator::ARouteGenerator(const FObjectInitializer& ObjectInitializer) :
 void ARouteGenerator::OnConstruction(const FTransform &Transform)
 {
   Super::OnConstruction(Transform);
-  GenerateRoutes();
 }
 
-void ARouteGenerator::GenerateRoutes()
+void ARouteGenerator::AddLaneChangeRoute()
 {
-  Routes.Reset(1);
+    auto NewRoute = NewObject<USplineComponent>(this);
 
-  auto Route = NewObject<USplineComponent>(this);
-  Routes.Add(Route);
-  Routes[0]->SetupAttachment(RootComponent);
-  Routes[0]->SetHiddenInGame(true);
-  Routes[0]->SetMobility(EComponentMobility::Static);
-  Routes[0]->RegisterComponent();
+    NewRoute->SetupAttachment(RootComponent);
+    NewRoute->SetHiddenInGame(true);
+    NewRoute->SetMobility(EComponentMobility::Static);
+    NewRoute->RegisterComponent();
 
-  Routes[0]->ClearSplinePoints();
+    NewRoute->ClearSplinePoints();
 
-  // Trajectory params
-  float l1(Route_LANE_CHANGE_LINE_PRE_DEFAULT);
-  float l2(Route_LANE_CHANGE_LINE_POST_DEFAULT);
-  float d(Route_LANE_CHANGE_DISTANCE_FORWARD_DEFAULT);
-  float A(Route_LANE_CHANGE_DISTANCE_SIDE_DEFAULT/2.0f);
-  float w(_PI/d);
-  uint8 N(Route_LANE_CHANGE_CURVE_PT_NUM_DEFAULT);
+    // Trajectory params
+    float l1(Route_LANE_CHANGE_LINE_PRE_DEFAULT);
+    float l2(Route_LANE_CHANGE_LINE_POST_DEFAULT);
+    float d(Route_LANE_CHANGE_DISTANCE_FORWARD_DEFAULT);
+    float A(Route_LANE_CHANGE_DISTANCE_SIDE_DEFAULT/2.0f);
+    float w(_PI/d);
+    uint8 N(Route_LANE_CHANGE_CURVE_PT_NUM_DEFAULT);
 
-  UE_LOG(LogCarla, Warning, TEXT("Root position %f, %f, %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z );
-  // Origin
-  Routes[0]->AddSplineLocalPoint(FVector(0.0f, 0.0f, 0.0f));
-  // Lane Change Start
-  Routes[0]->AddSplineLocalPoint(FVector(l1, 0.0f, 0.0f));
-  // Lane Change
-  float x(0.0f), y(0.0f), SinVal(0.0f), CosVal(0.0f);
-  const float deltaX(d/static_cast<float>(N+1));
-  for (uint8 i=1; i<=N; ++i)
-  {
+    UE_LOG(LogCarla, Warning, TEXT("Root position %f, %f, %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z );
+    // Origin
+    NewRoute->AddSplineLocalPoint(FVector(0.0f, 0.0f, 0.0f));
+    // Lane Change Start
+    NewRoute->AddSplineLocalPoint(FVector(l1, 0.0f, 0.0f));
+    // Lane Change
+    float x(0.0f), y(0.0f), SinVal(0.0f), CosVal(0.0f);
+    const float deltaX(d/static_cast<float>(N+1));
+    for (uint8 i=1; i<=N; ++i)
+    {
     x = l1 + i*deltaX;
     FMath::SinCos(&SinVal, &CosVal, w*(x-l1));
     y = A*CosVal-A;
-    Routes[0]->AddSplineLocalPoint(FVector(x, -y, 0.0f));
-  }
+    NewRoute->AddSplineLocalPoint(FVector(x, -y, 0.0f));
+    }
 
-  Routes[0]->AddSplineLocalPoint(FVector(l1 + d     , 2*A, 0.0f));
-  Routes[0]->AddSplineLocalPoint(FVector(l1 + d + l2, 2*A, 0.0f));
+    NewRoute->AddSplineLocalPoint(FVector(l1 + d     , 2*A, 0.0f));
+    NewRoute->AddSplineLocalPoint(FVector(l1 + d + l2, 2*A, 0.0f));
 
-  UpdateRoutePointNumbers();
-  ResetRoutePossibilities();
+    Routes.Add(NewRoute);
 }
 
-FVector2D ARouteGenerator::LatLongToCM(const double Longitude, const double Latitude)
+FVector2D ARouteGenerator::LatLongToCM(const double Latitude, const double Longitude)
 {
     // Latitude/longitude scale factor
     //			- https://en.wikipedia.org/wiki/Equator#Exact_length
@@ -125,7 +148,45 @@ FVector2D ARouteGenerator::LatLongToCM(const double Longitude, const double Lati
     return ConvertLatLongToMetersRelative(
                 Latitude,
                 Longitude,
-                RelativeLatitude,
-                RelativeLongitude ) * OSMToCentimetersScaleFactor;
+                AverageLatitude,
+                AverageLongitude ) * OSMToCentimetersScaleFactor;
 }
 
+void ARouteGenerator::GenerateRouteFromDataTable()
+{
+    Routes.Reset(GPS_routes.Num());
+    for (int32 i=0; i<GPS_routes.Num(); ++i)
+    {
+    
+        UDataTable* RouteData = GPS_routes[i];
+
+        if (RouteData==NULL) continue;
+
+        UE_LOG(LogCarla, Log, TEXT("Processing RouteData index: %d"), i);
+
+        auto NewRoute = NewObject<USplineComponent>(this);
+
+        NewRoute->SetupAttachment(RootComponent);
+        NewRoute->SetHiddenInGame(true);
+        NewRoute->SetMobility(EComponentMobility::Static);
+        NewRoute->RegisterComponent();
+        NewRoute->ClearSplinePoints();
+
+        for(int32 nodei = 0; nodei < RouteData->GetRowNames().Num(); nodei++)
+        {
+            FGPSLocationDescriptor* Row = RouteData->FindRow<FGPSLocationDescriptor>(FName(*FString::FromInt(nodei)), TEXT(""));
+            if (Row)
+            {
+                FVector2D location2D = LatLongToCM(Row->Latitude, Row->Longitude);
+                NewRoute->AddSplineLocalPoint(FVector(location2D, 0.0f));
+                UE_LOG(LogCarla, Log, TEXT("Adding GPS location index: %d, x: %f, y: %f"), nodei, location2D.X, location2D.Y);
+            }
+            else
+            {
+                UE_LOG(LogCarla, Error, TEXT("Cannot find GPS location index: %d"), nodei);
+            }
+        }
+
+        Routes.Add(NewRoute);
+    }
+}

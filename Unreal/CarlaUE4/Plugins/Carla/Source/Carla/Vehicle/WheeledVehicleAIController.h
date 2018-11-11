@@ -267,7 +267,7 @@ private:
   bool bControlIsSticky = true;
 
   UPROPERTY(VisibleAnywhere)
-  float SpeedLimit = 30.0f;
+  float SpeedLimit = 60.0f; //MARK for simulation acc
 
   UPROPERTY(VisibleAnywhere)
   ETrafficLightState TrafficLightState = ETrafficLightState::Green;

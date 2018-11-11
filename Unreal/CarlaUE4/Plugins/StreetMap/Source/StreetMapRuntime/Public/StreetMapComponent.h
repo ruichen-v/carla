@@ -154,11 +154,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "StreetMap")
 		UStreetMap* StreetMap;
 
-    UPROPERTY(VisibleAnywhere, Category = "StreetMap")
-		double RelativeLongitude;
-    
-    UPROPERTY(VisibleAnywhere, Category = "StreetMap")
-		double RelativeLatitude;
+    UPROPERTY(EditAnywhere, Category = "StreetMap")
+    double RelativeLatitude;
+
+    UPROPERTY(EditAnywhere, Category = "StreetMap")
+    double RelativeLongitude;
+
 
 	UPROPERTY(EditAnywhere, Category = "StreetMap")
 		FStreetMapMeshBuildSettings MeshBuildSettings;

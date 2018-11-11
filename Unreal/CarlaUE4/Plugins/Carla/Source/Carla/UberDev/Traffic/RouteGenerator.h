@@ -6,6 +6,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "Traffic/RoutePlanner.h"
 #include "RouteGenerator.generated.h"
 
@@ -30,7 +31,14 @@ class CARLA_API ARouteGenerator : public ARoutePlanner
 public:
 
     ARouteGenerator(const FObjectInitializer& ObjectInitializer);
-    FVector2D LatLongToCM(const double Longitude, const double Latitude);
+
+private:
+
+    FVector2D LatLongToCM(const double Latitude, const double Longitude);
+
+    void DeleteRoutes();
+
+    void UpdateRoutes();
 
 protected:
 
@@ -46,17 +54,49 @@ protected:
     UFUNCTION()
     void ResetRoutePossibilities();
 
-    void GenerateRoutes();
+    UFUNCTION()
+    void AddLaneChangeRoute();
+
+    UFUNCTION()
+    void GenerateRouteFromDataTable();
 
 public:
 
     UPROPERTY(VisibleAnywhere, Category="Traffic Routes")
     TArray<uint32> RoutePointNumbers;
 
-    UPROPERTY(EditAnywhere, Category = "Projection")
-    double RelativeLongitude;
+    UPROPERTY(EditAnywhere, Category="Traffic Routes")
+    TArray<UDataTable*> GPS_routes;
+
+    UPROPERTY(EditAnywhere, Category="Test")
+    bool bTriggerLaneChangeGeneration = false;
 
     UPROPERTY(EditAnywhere, Category = "Projection")
-    double RelativeLatitude;
+    double AverageLatitude = 0.0f;
 
+    UPROPERTY(EditAnywhere, Category = "Projection")
+    double AverageLongitude = 0.0f;
+
+};
+
+USTRUCT(BlueprintType)
+struct CARLA_API FGPSLocationDescriptor : public FTableRowBase
+{
+  GENERATED_BODY()
+
+public:
+
+    FGPSLocationDescriptor(){}
+
+    FGPSLocationDescriptor(const double _Latitude, const double _Longitude):
+        Latitude(_Latitude), Longitude(_Longitude)
+    {
+        //
+    }
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float Latitude;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float Longitude;
 };
