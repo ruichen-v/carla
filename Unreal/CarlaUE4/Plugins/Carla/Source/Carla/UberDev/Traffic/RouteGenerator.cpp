@@ -88,3 +88,44 @@ void ARouteGenerator::GenerateRoutes()
   UpdateRoutePointNumbers();
   ResetRoutePossibilities();
 }
+
+FVector2D ARouteGenerator::LatLongToCM(const double Longitude, const double Latitude)
+{
+    // Latitude/longitude scale factor
+    //			- https://en.wikipedia.org/wiki/Equator#Exact_length
+    static const double EarthCircumference = 40075036.0;
+    double LatitudeLongitudeScale = EarthCircumference / 360.0; // meters per degree
+    const float OSMToCentimetersScaleFactor = 100.0f;
+
+    // Converts latitude to meters
+    auto ConvertLatitudeToMeters = [LatitudeLongitudeScale]( const double Latitude ) -> double
+    {
+        return -Latitude * LatitudeLongitudeScale;
+    };
+
+    // Converts longitude to meters
+    auto ConvertLongitudeToMeters = [LatitudeLongitudeScale]( const double Longitude, const double Latitude ) -> double
+    {
+        return Longitude * LatitudeLongitudeScale * FMath::Cos( FMath::DegreesToRadians( Latitude ) );
+    };
+
+    // Converts latitude and longitude to X/Y coordinates, relative to some other latitude/longitude
+    auto ConvertLatLongToMetersRelative = [ConvertLatitudeToMeters, ConvertLongitudeToMeters](
+        const double Latitude,
+        const double Longitude,
+        const double RelativeToLatitude,
+        const double RelativeToLongitude ) -> FVector2D
+    {
+        // Applies Sanson-Flamsteed (sinusoidal) Projection (see http://www.progonos.com/furuti/MapProj/Normal/CartHow/HowSanson/howSanson.html)
+        return FVector2D(
+            (float)( ConvertLongitudeToMeters( Longitude, Latitude ) - ConvertLongitudeToMeters( RelativeToLongitude, Latitude ) ),
+            (float)( ConvertLatitudeToMeters( Latitude ) - ConvertLatitudeToMeters( RelativeToLatitude ) ) );
+    };
+
+    return ConvertLatLongToMetersRelative(
+                Latitude,
+                Longitude,
+                RelativeLatitude,
+                RelativeLongitude ) * OSMToCentimetersScaleFactor;
+}
+

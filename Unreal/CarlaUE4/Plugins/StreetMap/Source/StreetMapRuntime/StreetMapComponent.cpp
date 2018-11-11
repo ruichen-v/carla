@@ -82,6 +82,9 @@ void UStreetMapComponent::SetStreetMap(class UStreetMap* NewStreetMap, bool bCle
 
 		if (bRebuildMesh)
 			BuildMesh();
+
+        RelativeLongitude = StreetMap->GetRelativeLongitude();
+        RelativeLatitude = StreetMap->GetRelativeLatitude();
 	}
 }
 
@@ -229,7 +232,7 @@ void UStreetMapComponent::GenerateMesh()
 	const FColor HighwayColor = MeshBuildSettings.HighwayColor.ToFColor( false );
 	const float BuildingBorderThickness = MeshBuildSettings.BuildingBorderThickness;
 	FLinearColor BuildingBorderLinearColor = MeshBuildSettings.BuildingBorderLinearColor;
-	const float BuildingBorderZ = MeshBuildSettings.BuildingBorderZ;
+	const float BuildingBorderZ = MeshBuildSettings.BuildingBorderZ; 
 	const FColor BuildingBorderColor( BuildingBorderLinearColor.ToFColor( false ) );
 	const FColor BuildingFillColor( FLinearColor( BuildingBorderLinearColor * 0.33f ).CopyWithNewOpacity( 1.0f ).ToFColor( false ) );
 	/////////////////////////////////////////////////////////
@@ -248,12 +251,15 @@ void UStreetMapComponent::GenerateMesh()
 		const auto& Nodes = StreetMap->GetNodes();
 		const auto& Buildings = StreetMap->GetBuildings();
 
+        RelativeLongitude = StreetMap->GetRelativeLongitude();
+        RelativeLatitude = StreetMap->GetRelativeLatitude();
+
     MapSkeleton.Empty();
     int32 tmpcnt = 0;
     // MARK TODO switch on road tags
     EStreetMapMeshTag MeshTag = EStreetMapMeshTag::Road_2_Lanes_OneWay_Plain;
-		for( const auto& Road : Roads )
-		{
+    for( const auto& Road : Roads )
+    {
 			float RoadThickness = StreetThickness;
 			FColor RoadColor = StreetColor;
 			switch( Road.RoadType )
@@ -299,31 +305,31 @@ void UStreetMapComponent::GenerateMesh()
       FVector EndTangent;
       float TangentLength = 1.0f;
 
-			for( int32 PointIndex = 0; PointIndex < Road.RoadPoints.Num() - 1; ++PointIndex )
-			{
-        auto& RoadPointA = Road.RoadPoints[ PointIndex ];
-        auto& RoadPointB = Road.RoadPoints[ PointIndex + 1 ];
-        Knots.Emplace(FVector(RoadPointA.X, RoadPointA.Y, 0.0f));
+        for( int32 PointIndex = 0; PointIndex < Road.RoadPoints.Num() - 1; ++PointIndex )
+		{
+            auto& RoadPointA = Road.RoadPoints[ PointIndex ];
+            auto& RoadPointB = Road.RoadPoints[ PointIndex + 1 ];
+            Knots.Emplace(FVector(RoadPointA.X, RoadPointA.Y, 0.0f));
 
-        if (PointIndex == 0)
-        {
-          StartTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
-        }
-        if (PointIndex == Road.RoadPoints.Num() - 2)
-        {
-          EndTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
-          Knots.Emplace(FVector(RoadPointB.X, RoadPointB.Y, 0.0f));
-        }
+            if (PointIndex == 0)
+            {
+            StartTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
+            }
+            if (PointIndex == Road.RoadPoints.Num() - 2)
+            {
+            EndTangent = FVector((RoadPointB - RoadPointA).GetSafeNormal(), 0.0f);
+            Knots.Emplace(FVector(RoadPointB.X, RoadPointB.Y, 0.0f));
+            }
 
-        AddThick2DLine(
-					RoadPointA,
-          RoadPointB,
-					RoadZ,
-					RoadThickness,
-					RoadColor,
-					RoadColor,
-					MeshBoundingBox );
-			}
+            AddThick2DLine(
+                        RoadPointA,
+                        RoadPointB,
+                        RoadZ,
+                        RoadThickness,
+                        RoadColor,
+                        RoadColor,
+                        MeshBoundingBox );
+        }
       // UE_LOG(LogTemp, Warning, TEXT("UStreetMapComponent::GenerateMesh: generate descriptor %d"), tmpcnt++);
       // for (int i=0; i<Knots.Num(); ++i)
       // {
@@ -331,7 +337,7 @@ void UStreetMapComponent::GenerateMesh()
       // }
 
       AddRoadDescriptor(Knots, StartTangent, EndTangent, MeshTag);
-		}
+    }
 
 		TArray< int32 > TempIndices;
 		TArray< int32 > TriangulatedVertexIndices;

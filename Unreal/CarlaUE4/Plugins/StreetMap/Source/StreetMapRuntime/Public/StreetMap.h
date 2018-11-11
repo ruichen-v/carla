@@ -366,6 +366,17 @@ public:
 		return BoundsMax;
 	}
 
+    /** Get GPS location that the projection was relative to*/
+    double GetRelativeLongitude() const
+    {
+        return RelativeLongitude;
+    }
+    double GetRelativeLatitude() const
+    {
+        return RelativeLatitude;
+    }
+
+
 
 protected:
 
@@ -388,6 +399,13 @@ protected:
 	/** 2D bounds (max) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)
 	FVector2D BoundsMax;
+
+    /** GPS location that the projection was relative to*/
+    UPROPERTY( Category=StreetMap, VisibleAnywhere)
+    double RelativeLongitude;
+    
+    UPROPERTY( Category=StreetMap, VisibleAnywhere)
+    double RelativeLatitude;
 
 #if WITH_EDITORONLY_DATA
 	/** Importing data and options used for this mesh */

@@ -56,7 +56,6 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 	// @todo: We should make this scale factor customizable as an import option
 	const float OSMToCentimetersScaleFactor = 100.0f;
 
-
 	// Converts latitude to meters
 	auto ConvertLatitudeToMeters = []( const double Latitude ) -> double
 	{
@@ -335,6 +334,9 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 
 	StreetMap->BoundsMin = FVector2D( TNumericLimits<float>::Max(), TNumericLimits<float>::Max() );
 	StreetMap->BoundsMax = FVector2D( TNumericLimits<float>::Lowest(), TNumericLimits<float>::Lowest() );
+
+    StreetMap->RelativeLatitude = OSMFile.AverageLatitude;
+    StreetMap->RelativeLongitude = OSMFile.AverageLongitude;
 
 	for( const FOSMFile::FOSMWayInfo* OSMWay : OSMFile.Ways )
 	{

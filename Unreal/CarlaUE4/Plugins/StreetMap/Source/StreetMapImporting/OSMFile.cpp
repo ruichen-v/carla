@@ -51,7 +51,7 @@ bool FOSMFile::LoadOpenStreetMapFile( FString& OSMFilePath, const bool bIsFilePa
 		{
 			AverageLatitude /= NodeMap.Num();
 			AverageLongitude /= NodeMap.Num();
-		}
+        }
 
 		return true;
 	}

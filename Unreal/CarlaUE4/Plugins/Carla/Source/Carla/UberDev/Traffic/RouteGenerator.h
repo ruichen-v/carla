@@ -29,7 +29,8 @@ class CARLA_API ARouteGenerator : public ARoutePlanner
 
 public:
 
-  ARouteGenerator(const FObjectInitializer& ObjectInitializer);
+    ARouteGenerator(const FObjectInitializer& ObjectInitializer);
+    FVector2D LatLongToCM(const double Longitude, const double Latitude);
 
 protected:
 
@@ -49,7 +50,13 @@ protected:
 
 public:
 
-  UPROPERTY(VisibleAnywhere, Category="Traffic Routes")
-  TArray<uint32> RoutePointNumbers;
+    UPROPERTY(VisibleAnywhere, Category="Traffic Routes")
+    TArray<uint32> RoutePointNumbers;
+
+    UPROPERTY(EditAnywhere, Category = "Projection")
+    double RelativeLongitude;
+
+    UPROPERTY(EditAnywhere, Category = "Projection")
+    double RelativeLatitude;
 
 };
