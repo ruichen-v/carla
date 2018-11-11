@@ -66,6 +66,7 @@ void AStreetSplineRoad::GenerateRoadSegments()
     USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(this);
     SplineMesh->RegisterComponent();
     SplineMesh->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+    SplineMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
     // Get start and end of segment
     FVector StartLocation, StartTangent;

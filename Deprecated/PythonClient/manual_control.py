@@ -194,7 +194,7 @@ class CarlaGame(object):
         number_of_player_starts = len(scene.player_start_spots)
         player_start = np.random.randint(number_of_player_starts)
         print('Starting new episode...')
-        self.client.start_episode(player_start)
+        self.client.start_episode(0) # For demo only, was `player_start`
         self._timer = Timer()
         self._is_on_reverse = False
 
