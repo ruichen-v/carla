@@ -24,7 +24,7 @@ from carla.util import print_over_same_line
 
 def run_carla_client(args):
     # Here we will run 3 episodes with 300 frames each.
-    number_of_episodes = 5
+    number_of_episodes = 1
     frames_per_episode = 15000000
 
     # We assume the CARLA server is already waiting for a client to connect at
@@ -47,7 +47,7 @@ def run_carla_client(args):
                 settings.set(
                     SynchronousMode=True,
                     SendNonPlayerAgentsInfo=True,
-                    NumberOfVehicles=2,
+                    NumberOfVehicles=0,
                     NumberOfPedestrians=0,
                     WeatherId=random.choice([1,]),
                     QualityLevel=args.quality_level)
@@ -153,7 +153,7 @@ def run_carla_client(args):
                     control = measurements.player_measurements.autopilot_control
                     # MARK disable stochastic control
                     # control.steer += random.uniform(-0.1, 0.1)
-                    control.throttle *= 4
+                    # control.throttle *= 4
                     client.send_control(control)
 
 
@@ -175,7 +175,7 @@ def print_measurements(measurements):
         other_lane=100 * player_measurements.intersection_otherlane,
         offroad=100 * player_measurements.intersection_offroad,
         agents_num=number_of_agents)
-    print_over_same_line(message)
+    # print_over_same_line(message) # MARK uncomment to enable in-game display
 
 
 def main():

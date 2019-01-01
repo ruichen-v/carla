@@ -268,8 +268,7 @@ float AWheeledVehicleAIController::GoToNextTargetLocation(FVector &Direction)
     return FVector{Result.X, Result.Y, CurrentLocation.Z};
   } ();
 
-  if (Target.Equals(CurrentLocation, 200.0f))
-  {
+  if (Target.Equals(CurrentLocation, 250.0f)) { // MARK: increased tolerance from 80
     TargetLocations.pop();
     if (!TargetLocations.empty())
     {
