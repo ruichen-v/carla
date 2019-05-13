@@ -7,6 +7,7 @@ namespace UnrealBuildTool.Rules
         public StreetMapRuntime(ReadOnlyTargetRules Target)
 			: base(Target)
 		{
+			PrivatePCHHeaderFile = "StreetMapRuntime.h";
 			PrivateDependencyModuleNames.AddRange(
 				new string[] {
                     "Core",
@@ -14,10 +15,15 @@ namespace UnrealBuildTool.Rules
 					"Engine",
 					"RHI",
 					"RenderCore",
-					"ShaderCore",
-                    "PropertyEditor"
+					"ShaderCore"
                 }
 			);
+			if (Target.bBuildEditor == true)
+            {
+                //@TODO: Needed for FPropertyEditorModule::NotifyCustomizationModuleChanged()
+                //@TOOD: To move/implement in FStreetMapComponentDetails
+                PrivateDependencyModuleNames.Add("PropertyEditor");
+            }
 		}
 	}
 }
