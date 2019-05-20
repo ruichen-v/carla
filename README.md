@@ -33,7 +33,7 @@ OSM map data and GPS route import
 
 The screenshot shows the buggy race track (highlighted) aligned with CMU Pittsburgh campus.
 
-![carla.org](Docs/img/CMUBuggyRace.png "Buggy Race in CMU Spring Carnival")
+![Sample Usage](Docs/img/CMUBuggyRace.png "Buggy Race in CMU Spring Carnival")
 
 
 CARLA Simulator
