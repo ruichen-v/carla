@@ -31,6 +31,10 @@ OSM map data and GPS route import
 
 ## You can create a map with road meshes from `CMUTrack.osm` and generate routes from `buggytracegps.csv` to simulate the [**Buggy Race in CMU Spring Carnival**](https://www.springcarnival.org/buggy.shtml).
 
+The screenshot shows the buggy race track (highlighted) aligned with CMU Pittsburgh campus.
+
+![carla.org](Docs/img/CMUBuggyRace.png "Buggy Race in CMU Spring Carnival")
+
 
 CARLA Simulator
 ===============
