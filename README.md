@@ -1,3 +1,34 @@
+OSM map and GPS route import
+============================
+* I integrated a modified fork of [**StreetMapPlugin**](https://github.com/ue4plugins/StreetMap) to enable automatic map import and road mesh generation from OSM data.
+* I implemented automatic route planner generation from GPS trajectories as **RouteGenerator**.
+* The above two functionalities can be used together to easily simulate driving scenarios that are record from real-world traffic.
+## Import OSM data and generate road meshes
+
+1. Make sure you can clone git repos with ssh.
+2. In terminal: `git clone -b master git@github.com:ruichen-v/carla.git --recursive`
+3. Build carla using **UE4.21**. You will need to build from source.
+4. Export OSM data for an area of interest from *osm.com*.
+5. In UE Editor, import the downloaded osm file into content folder.
+6. Drag the imported osm file into main view. You will get a **StreetMapActor**.
+7. In **Meshes** category in **StreetMapActor** property, assign a road mesh to each **StreetMapMeshTag** slot in **StaticMeshes**.
+8. You can use *Content/Carla/Static/Road/RoadPiece.uasset*.
+9. Each **StreetMapMeshTag** controls the appearance of a certain range of road types in osm data. Refer to the following section in `path/to/carla/Unreal/CarlaUE4/Plugins/StreetMap/Source/StreetMapRuntime/StreetMapComponent.cpp:262~298` for the correspondence between mesh tags and road types.
+
+
+## Import GPS routes and generate route planners for navigation
+
+1. In UE Editor, import your GPS routes in required format into content viewer, select **FGPSLocationDescriptor** in the drop down menu when prompted.
+2. In Carla C++ class/AutoGen/RouteGen/, drag **RouteGenerator** into main view. Set its location to the same as **StreetMapActor**.
+3. Copy **RelativeLatitude/RelativeLongitude** from **StreetMap** category in **StreetMapActor** property and paste into the **AverageLatitude/AverageLongitude** in **Projection** category in the **RouteGenerator** that you created. This aligns the projection origins of both roads and routes.
+4. In **Traffic Routes** category in **RouteGenerator** property, click + in **GPS_routes**.
+5. Assign the imported GPS route file to the newly created entry in **GPS_routes**
+6. Click once in arbitrary area in editor main view to visualize the generated route planners.
+7. Enlarge and place the **box trigger volume** (attached to **RouteGenerator**) at the start point of your route.
+9. Place an **PlayerStart** pointing towards the trigger volume.
+10. Vehicles spawned at the **PlayerStart** should follow the GPS routes in play mode now.
+
+
 CARLA Simulator
 ===============
 

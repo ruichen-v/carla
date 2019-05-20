@@ -5,7 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "MapGen/SplineCityMapMeshTag.h"
 
-#include "UberDev/MapGen/SplineRoad.h"
+#include "AutoGen/MapGen/SplineRoad.h"
 #include "SplineCityMapGenerator.generated.h"
 
 /**
