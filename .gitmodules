@@ -1,3 +1,3 @@
 [submodule "Unreal/CarlaUE4/Plugins/StreetMap"]
 	path = Unreal/CarlaUE4/Plugins/StreetMap
-	url = git@github.com:ruichen-v/StreetMap.git
+	url = https://github.com/ruichen-v/StreetMap.git 
