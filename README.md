@@ -7,7 +7,7 @@ OSM map data and GPS route import
 ## Import OSM data and generate road meshes
 
 1. Make sure you can clone git repos with ssh.
-2. In terminal: `git clone -b master git@github.com:ruichen-v/carla.git --recursive`
+2. In terminal: `git clone -b master https://github.com/ruichen-v/carla.git --recursive`
 3. Build carla using **UE4.21**. You will need to build from source.
 4. Export OSM data for an area of interest from [**Open Street Map**](https://www.openstreetmap.org/#map=5/38.007/-95.844). A sample osm file is provided `Unreal/CarlaUE4/Plugins/Carla/Content/sample_files/CMUTrack.osm`.
 5. In UE Editor, import the downloaded osm file into content folder.
