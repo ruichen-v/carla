@@ -33,6 +33,8 @@ OSM map data and GPS route import
 
 The screenshot shows the buggy race track (highlighted) aligned with CMU Pittsburgh campus.
 
+Map data © OpenStreetMap contributors. [**Link to copyright page**](https://www.openstreetmap.org/copyright)
+
 ![Sample Usage](Docs/img/CMUBuggyRace.png "Buggy Race in CMU Spring Carnival")
 
 
