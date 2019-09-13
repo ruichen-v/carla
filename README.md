@@ -4,6 +4,7 @@ OSM map data and GPS route import
 * I implemented automatic route planner generation from GPS trajectories as **RouteGenerator**.
 * The above two functionalities can be used together to easily simulate driving trajectories recorded from real-world traffic.
   
+  [![Demonstration of generating downtown Pittsburgh from OSM data.](Docs/img/auto_gen_map_pitts.png 'Link to demo video')](https://www.youtube.com/watch?v=DuCVeBRDr7E)
 ## Import OSM data and generate road meshes
 
 1. Make sure you can clone git repos with ssh.
