@@ -7,15 +7,14 @@ OSM map data and GPS route import
   [![Demonstration of generating downtown Pittsburgh from OSM data.](Docs/img/auto_gen_map_pitts.png 'Link to demo video')](https://www.youtube.com/watch?v=DuCVeBRDr7E)
 ## Import OSM data and generate road meshes
 
-1. Make sure you can clone git repos with ssh.
-2. In terminal: `git clone -b master https://github.com/ruichen-v/carla.git --recursive`
-3. Build carla using **UE4.21**. You will need to build from source.
-4. Export OSM data for an area of interest from [**Open Street Map**](https://www.openstreetmap.org/#map=5/38.007/-95.844). A sample osm file is provided `Unreal/CarlaUE4/Plugins/Carla/Content/sample_files/CMUTrack.osm`.
-5. In UE Editor, import the downloaded osm file into content folder.
-6. Drag the imported osm file into main view. You will get a **StreetMapActor**.
-7. In **Meshes** category in **StreetMapActor** property, assign a road mesh to each **StreetMapMeshTag** slot in **StaticMeshes**.
-8. You can use `Content/Carla/Static/Road/RoadPiece.uasset` for all mesh tags for simplicity.
-9. Each **StreetMapMeshTag** controls the appearance of a certain range of road types in osm data. Refer to `path/to/carla/Unreal/CarlaUE4/Plugins/StreetMap/Source/StreetMapRuntime/StreetMapComponent.cpp:262~298` for the correspondence between mesh tags and road types.
+1. In terminal: `git clone -b master https://github.com/ruichen-v/carla.git --recursive`
+2. Build carla using **UE4.21**. You will need to build from source.
+3. Export OSM data for an area of interest from [**Open Street Map**](https://www.openstreetmap.org/#map=5/38.007/-95.844). A sample osm file is provided `Unreal/CarlaUE4/Plugins/Carla/Content/sample_files/CMUTrack.osm`.
+4. In UE Editor, import the downloaded osm file into content folder.
+5. Drag the imported osm file into main view. You will get a **StreetMapActor**.
+6. In **Meshes** category in **StreetMapActor** property, assign a road mesh to each **StreetMapMeshTag** slot in **StaticMeshes**.
+7. You can use `Content/Carla/Static/Road/RoadPiece.uasset` for all mesh tags for simplicity.
+8. Each **StreetMapMeshTag** controls the appearance of a certain range of road types in osm data. Refer to `path/to/carla/Unreal/CarlaUE4/Plugins/StreetMap/Source/StreetMapRuntime/StreetMapComponent.cpp:262~298` for the correspondence between mesh tags and road types.
 
 
 ## Import GPS routes and generate route planners for navigation
