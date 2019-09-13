@@ -1,6 +1,6 @@
 OSM map data and GPS route import
 ============================
-* I integrated a modified fork of [**StreetMapPlugin**](https://github.com/ue4plugins/StreetMap) to enable automatic map import and road mesh generation from OSM data.
+* I integrated a modified fork of [**StreetMapPlugin**](https://github.com/ue4plugins/StreetMap) (as submodule) to enable automatic map import and road mesh generation from OSM data.
 * I implemented automatic route planner generation from GPS trajectories as **RouteGenerator**.
 * The above two functionalities can be used together to easily simulate driving trajectories recorded from real-world traffic.
   
